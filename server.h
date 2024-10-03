@@ -6,6 +6,8 @@
 #include <QTcpSocket>
 #include <QList>
 
+#include "packettypekeeperservice.h"
+
 class Server : public QTcpServer
 {
     Q_OBJECT
@@ -27,6 +29,8 @@ signals:
 
 private:
     QList<QTcpSocket*> m_list;
+    PacketTypeKeeperService* ptKeeper;
+    QChar packetSeperator = "#";
     int port = 3000;
 };
 

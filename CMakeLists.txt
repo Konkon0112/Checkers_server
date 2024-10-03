@@ -15,6 +15,9 @@ find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Network)
 add_executable(checkers_backend
   main.cpp
   server.h server.cpp
+  roombase.h roombase.cpp
+  participant.h participant.cpp
+  packettypekeeperservice.h packettypekeeperservice.cpp
 )
 
 target_link_libraries(checkers_backend Qt${QT_VERSION_MAJOR}::Core Qt6::Network)

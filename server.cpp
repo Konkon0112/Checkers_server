@@ -3,7 +3,9 @@
 
 Server::Server(QObject *parent)
     : QTcpServer{parent}
-{}
+{
+    ptKeeper = new PacketTypeKeeperService(this);
+}
 
 void Server::startListening()
 {
@@ -46,6 +48,7 @@ void Server::readyRead()
     if(!socket)return;
 
     QByteArray data = socket->readAll();
+    qInfo() << "Received data:" << data;
     foreach(QTcpSocket *socket, m_list)
     {
         socket->write(data);
