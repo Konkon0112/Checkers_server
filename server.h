@@ -30,7 +30,7 @@ signals:
 private:
     QList<QTcpSocket*> m_list;
     PacketTypeKeeperService* ptKeeper;
-    QChar packetSeperator = "#";
+    QChar packetSeperator = '#';
     int port = 3000;
 };
 

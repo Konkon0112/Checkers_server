@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QMap>
+#include <QList>
 
 class PacketTypeKeeperService : public QObject
 {
@@ -12,6 +13,7 @@ public:
         JOIN_NEW_SINGLE_GAME,
         CONTINUE_SINGLE_GAME,
         JOIN_MULTI_GAME,
+        SEND_STEPS_SO_FAR,
         QUIT_GAME,
         GAME_OVER,
         INITIATE_STEP,
@@ -25,9 +27,15 @@ public:
     QString enumToString(PacketTypeEnum pT);
     PacketTypeEnum stringToEnum(QString pTInString);
 
+    QString shouldServerHandle(QString packet);
+    QString shouldParticipantHandle(QString packet);
 private:
-    QMap<PacketTypeEnum, QString> packetMap;
+    QList<PacketTypeEnum> serverList;
+    QList<PacketTypeEnum> participantList;
 
+    QMap<PacketTypeEnum, QString> packetMap;
+    QString isServerHandledPacket(PacketTypeEnum pt);
+    QString isParticipantHandledPacket(PacketTypeEnum pt);
 signals:
 };
 

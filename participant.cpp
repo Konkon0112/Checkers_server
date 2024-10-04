@@ -9,6 +9,16 @@ Participant::Participant(QTcpSocket* s,
     socket = s;
     pType = pT;
     pSide = pS;
+    ptKeeper = new PacketTypeKeeperService(this);
+}
+
+void Participant::handlingReadyReadSlot()
+{
+    QTcpSocket *socket = qobject_cast<QTcpSocket*>(sender());
+    if(!socket)return;
+
+    QByteArray data = socket->readAll();
+    qInfo() << "Received data:" << data;
 }
 
 

@@ -4,6 +4,8 @@
 #include <QObject>
 #include <QTcpSocket>
 
+#include "packettypekeeperservice.h"
+
 class Participant : public QObject
 {
     Q_OBJECT
@@ -24,10 +26,14 @@ public:
 
 private:
     QTcpSocket* socket;
+    PacketTypeKeeperService* ptKeeper;
     ParticipantTypeEnum pType;
     ParticipantSideEnum pSide;
 
 signals:
+
+private slots:
+    void handlingReadyReadSlot();
 };
 
 #endif // PARTICIPANT_H
