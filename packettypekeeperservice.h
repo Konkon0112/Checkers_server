@@ -15,6 +15,7 @@ public:
         JOIN_MULTI_GAME,
         SEND_STEPS_SO_FAR,
         QUIT_GAME,
+        GAME_STARTED,
         GAME_OVER,
         INITIATE_STEP,
         STEP_HAPPENED,

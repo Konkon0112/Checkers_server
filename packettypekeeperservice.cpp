@@ -8,6 +8,7 @@ PacketTypeKeeperService::PacketTypeKeeperService(QObject *parent)
     packetMap.insert(PacketTypeEnum::JOIN_MULTI_GAME, "JOIN_MULTI_GAME");
     packetMap.insert(PacketTypeEnum::SEND_STEPS_SO_FAR, "SEND_STEPS_SO_FAR");
     packetMap.insert(PacketTypeEnum::QUIT_GAME, "QUIT_GAME");
+    packetMap.insert(PacketTypeEnum::GAME_STARTED, "GAME_STARTED");
     packetMap.insert(PacketTypeEnum::GAME_OVER, "GAME_OVER");
     packetMap.insert(PacketTypeEnum::INITIATE_STEP, "INITIATE_STEP");
     packetMap.insert(PacketTypeEnum::STEP_HAPPENED, "STEP_HAPPENED");
@@ -22,6 +23,7 @@ PacketTypeKeeperService::PacketTypeKeeperService(QObject *parent)
     //Collect the packets the participant should handle
     participantList.append(PacketTypeEnum::SEND_STEPS_SO_FAR);
     participantList.append(PacketTypeEnum::QUIT_GAME);
+    participantList.append(PacketTypeEnum::GAME_STARTED);
     participantList.append(PacketTypeEnum::GAME_OVER);
     participantList.append(PacketTypeEnum::INITIATE_STEP);
     participantList.append(PacketTypeEnum::STEP_HAPPENED);

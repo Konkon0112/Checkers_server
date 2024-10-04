@@ -24,6 +24,8 @@ public:
                          ParticipantSideEnum pS,
                          QObject *parent = nullptr);
 
+    bool isPlayerType(ParticipantTypeEnum pT);
+
 private:
     QTcpSocket* socket;
     PacketTypeKeeperService* ptKeeper;

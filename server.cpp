@@ -50,9 +50,16 @@ void Server::readyRead()
     QByteArray data = socket->readAll();
     QString packetType = ptKeeper->shouldServerHandle(QString(data));
 
-    if(packetType != ""){
-        qInfo() << "good" << data;
-    } else {
+    if(packetType ==
+        ptKeeper->enumToString(PacketTypeKeeperService::PacketTypeEnum::JOIN_NEW_SINGLE_GAME)){
+        qInfo() << data << "NEW S";
+    } else if (packetType ==
+               ptKeeper->enumToString(PacketTypeKeeperService::PacketTypeEnum::JOIN_MULTI_GAME)) {
+        qInfo() << data << "MULTI";
+    } else if (packetType ==
+               ptKeeper->enumToString(PacketTypeKeeperService::PacketTypeEnum::CONTINUE_SINGLE_GAME)) {
+        qInfo() << data << "CONTINUE S";
+    }else {
         qInfo() << "Not server's responsibility!" << data;
     }
 }

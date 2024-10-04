@@ -32,6 +32,7 @@ protected:
     RoomState roomState;
 
 private:
+    int countPlayersInRoom();
 
 private slots:
     void readyRead();
