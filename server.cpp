@@ -19,12 +19,12 @@ void Server::startListening()
 
 void Server::closeServer()
 {
-    foreach (QTcpSocket *socket, m_list)
+    foreach (QTcpSocket *socket, sList)
     {
         socket->close();
     }
-    qDeleteAll(m_list);
-    m_list.clear();
+    qDeleteAll(sList);
+    sList.clear();
 
 
     QTcpServer::close();
@@ -36,7 +36,7 @@ void Server::disconnected()
     if(!socket)return;
     qInfo() << "Socket disconnected" << socket;
 
-    m_list.removeAll(socket);
+    sList.removeAll(socket);
     disconnect(socket,&QTcpSocket::disconnected,this,&Server::disconnected);
     disconnect(socket,&QTcpSocket::readyRead,this,&Server::readyRead);
     socket->deleteLater();
@@ -48,10 +48,12 @@ void Server::readyRead()
     if(!socket)return;
 
     QByteArray data = socket->readAll();
-    qInfo() << "Received data:" << data;
-    foreach(QTcpSocket *socket, m_list)
-    {
-        socket->write(data);
+    QString packetType = ptKeeper->shouldServerHandle(QString(data));
+
+    if(packetType != ""){
+        qInfo() << "good" << data;
+    } else {
+        qInfo() << "Not server's responsibility!" << data;
     }
 }
 
@@ -66,8 +68,22 @@ void Server::incomingConnection(qintptr handle)
         return;
     }
 
-    m_list.append(socket);
+    sList.append(socket);
     connect(socket,&QTcpSocket::disconnected,this,&Server::disconnected);
     connect(socket,&QTcpSocket::readyRead,this,&Server::readyRead);
     qInfo() << "Connection received";
+}
+
+void Server::handleIncommingPacket(QString packetStr)
+{
+    if(packetStr ==
+        ptKeeper->enumToString(PacketTypeKeeperService::PacketTypeEnum::JOIN_NEW_SINGLE_GAME)){
+
+    } else if(packetStr ==
+               ptKeeper->enumToString(PacketTypeKeeperService::PacketTypeEnum::CONTINUE_SINGLE_GAME)){
+
+    } else if(packetStr ==
+               ptKeeper->enumToString(PacketTypeKeeperService::PacketTypeEnum::JOIN_MULTI_GAME)){
+
+    }
 }

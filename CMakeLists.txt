@@ -18,6 +18,10 @@ add_executable(checkers_backend
   roombase.h roombase.cpp
   participant.h participant.cpp
   packettypekeeperservice.h packettypekeeperservice.cpp
+  humanvshumanroom.h humanvshumanroom.cpp
+  humanvsrobotroom.h humanvsrobotroom.cpp
+  humanparticipant.h humanparticipant.cpp
+  robotparticipant.h robotparticipant.cpp
 )
 
 target_link_libraries(checkers_backend Qt${QT_VERSION_MAJOR}::Core Qt6::Network)

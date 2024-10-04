@@ -7,6 +7,7 @@
 #include <QList>
 
 #include "packettypekeeperservice.h"
+#include "roombase.h"
 
 class Server : public QTcpServer
 {
@@ -28,7 +29,10 @@ protected:
 signals:
 
 private:
-    QList<QTcpSocket*> m_list;
+    void handleIncommingPacket(QString packetStr);
+
+    QList<QTcpSocket*> sList;
+    QList<RoomBase*> rList;
     PacketTypeKeeperService* ptKeeper;
     QChar packetSeperator = '#';
     int port = 3000;

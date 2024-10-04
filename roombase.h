@@ -2,8 +2,13 @@
 #define ROOMBASE_H
 
 #include <QObject>
+#include <QList>
 #include <QTcpSocket>
 
+#include "participant.h"
+
+// Needed a base class for this, because I want to create the robot
+// player in the constructor of the HumanVsRobotRoom class
 class RoomBase : public QObject
 {
     Q_OBJECT
@@ -12,10 +17,28 @@ public:
         ACTIVE,
         WAITING_FOR_PLAYERS,
     };
-    explicit RoomBase(QObject *parent = nullptr);
+
+    enum RoomType {
+        HUMAN_VS_HUMAN,
+        HUMAN_VS_ROBOT,
+    };
+    explicit RoomBase(RoomState rs, QObject *parent = nullptr);
 
     void join(QTcpSocket* socket);
+
+protected:
+    RoomType roomType;
+    QList<Participant*> pList;
+    RoomState roomState;
+
+private:
+
+private slots:
+    void readyRead();
+
 signals:
+
+    void gameOver(QList<QTcpSocket*> pSocketList);
 };
 
 #endif // ROOMBASE_H
