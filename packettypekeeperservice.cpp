@@ -45,6 +45,7 @@ PacketTypeKeeperService::PacketTypeEnum PacketTypeKeeperService::stringToEnumPac
     for (auto it = packetMap.constBegin(); it != packetMap.constEnd(); ++it) {
         if(it.value() == pTInString) return it.key();
     }
+    return PacketTypeKeeperService::PacketTypeEnum::UNKNOWN;
 }
 
 QString PacketTypeKeeperService::enumToStringPieceColor(Participant::ParticipantSideEnum pC)
@@ -57,6 +58,7 @@ Participant::ParticipantSideEnum PacketTypeKeeperService::stringToEnumPieceColor
     for (auto it = pieceColorMap.constBegin(); it != pieceColorMap.constEnd(); ++it) {
         if(it.value() == pCInString) return it.key();
     }
+    return Participant::ParticipantSideEnum::NONE;
 }
 /**
  * @brief Finds out if the received packet should be handled by the server.

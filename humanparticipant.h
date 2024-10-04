@@ -5,6 +5,7 @@
 #include <QTcpSocket>
 
 #include "participant.h"
+#include "packettypekeeperservice.h"
 
 class HumanParticipant : public Participant
 {
@@ -19,6 +20,13 @@ private:
     QTcpSocket* socket;
 
 signals:
+
+protected slots:
+    void handlingReadyReadSlot();
+    void gameStartedSlot() override;
+    void stepHappenedSlot() override;
+    void gameOverSlot() override;
+    void turnChangedSlot() override;
 };
 
 #endif // HUMANPARTICIPANT_H

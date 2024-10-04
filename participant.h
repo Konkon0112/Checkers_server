@@ -4,8 +4,8 @@
 #include <QObject>
 #include <QTcpSocket>
 
-
 class PacketTypeKeeperService;
+
 class Participant : public QObject
 {
     Q_OBJECT
@@ -17,7 +17,7 @@ public:
     enum class ParticipantSideEnum {
         DARK,
         LIGHT,
-        NONE,
+        NONE, // For spectators
     };
     explicit Participant(ParticipantTypeEnum pT,
                          ParticipantSideEnum pS,
@@ -25,15 +25,24 @@ public:
 
     bool isPlayerType(ParticipantTypeEnum pT);
 
-private:
+protected:
     PacketTypeKeeperService* ptKeeper;
     ParticipantTypeEnum pType;
     ParticipantSideEnum pSide;
 
-signals:
+private:
 
-private slots:
-    void handlingReadyReadSlot();
+signals:
+    void playerQuitSignal();
+    void stepInitiatedSignal(QString step);
+    void undoInitiatedSignal();
+    void undoApprovedSignal();
+
+protected slots:
+    virtual void gameStartedSlot() = 0;
+    virtual void stepHappenedSlot() = 0;
+    virtual void gameOverSlot() = 0;
+    virtual void turnChangedSlot() = 0;
 };
 
 #endif // PARTICIPANT_H
