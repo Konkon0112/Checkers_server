@@ -16,6 +16,7 @@ public:
     enum RoomState {
         ACTIVE,
         WAITING_FOR_PLAYERS,
+        FINISHED,
     };
 
     enum RoomType {
@@ -25,6 +26,8 @@ public:
     explicit RoomBase(RoomState rs, QObject *parent = nullptr);
 
     void join(QTcpSocket* socket);
+
+    RoomState getRoomState() const;
 
 protected:
     RoomType roomType;

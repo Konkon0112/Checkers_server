@@ -1,10 +1,16 @@
-#include "server.h"
 #include <QDebug>
+#include "server.h"
+#include "humanvsrobotroom.h"
+#include "humanvshumanroom.h"
+#include "participant.h"
 
 Server::Server(QObject *parent)
     : QTcpServer{parent}
 {
     ptKeeper = new PacketTypeKeeperService(this);
+
+    HumanVsHumanRoom* newRoom = new HumanVsHumanRoom(this);
+    rList.append(newRoom);
 }
 
 void Server::startListening()
@@ -51,14 +57,24 @@ void Server::readyRead()
     QString packetType = ptKeeper->shouldServerHandle(QString(data));
 
     if(packetType ==
-        ptKeeper->enumToString(PacketTypeKeeperService::PacketTypeEnum::JOIN_NEW_SINGLE_GAME)){
+        ptKeeper->enumToStringPacketType(PacketTypeKeeperService::PacketTypeEnum::JOIN_NEW_SINGLE_GAME)){
         qInfo() << data << "NEW S";
+
+        QString dataStr(data);
+        Participant::ParticipantSideEnum pSideEnum =
+            dataStr.contains(ptKeeper->enumToStringPieceColor(Participant::ParticipantSideEnum::DARK))?
+            Participant::ParticipantSideEnum::DARK: Participant::ParticipantSideEnum::LIGHT;
+
+        HumanVsRobotRoom* newRoom = new HumanVsRobotRoom(pSideEnum, this);
+        newRoom->join(socket);
+        rList.append(newRoom);
+
     } else if (packetType ==
-               ptKeeper->enumToString(PacketTypeKeeperService::PacketTypeEnum::JOIN_MULTI_GAME)) {
-        qInfo() << data << "MULTI";
-    } else if (packetType ==
-               ptKeeper->enumToString(PacketTypeKeeperService::PacketTypeEnum::CONTINUE_SINGLE_GAME)) {
+               ptKeeper->enumToStringPacketType(PacketTypeKeeperService::PacketTypeEnum::CONTINUE_SINGLE_GAME)) {
         qInfo() << data << "CONTINUE S";
+    } else if (packetType ==
+               ptKeeper->enumToStringPacketType(PacketTypeKeeperService::PacketTypeEnum::JOIN_MULTI_GAME)) {
+        qInfo() << data << "MULTI";
     }else {
         qInfo() << "Not server's responsibility!" << data;
     }
@@ -84,13 +100,13 @@ void Server::incomingConnection(qintptr handle)
 void Server::handleIncommingPacket(QString packetStr)
 {
     if(packetStr ==
-        ptKeeper->enumToString(PacketTypeKeeperService::PacketTypeEnum::JOIN_NEW_SINGLE_GAME)){
+        ptKeeper->enumToStringPacketType(PacketTypeKeeperService::PacketTypeEnum::JOIN_NEW_SINGLE_GAME)){
 
     } else if(packetStr ==
-               ptKeeper->enumToString(PacketTypeKeeperService::PacketTypeEnum::CONTINUE_SINGLE_GAME)){
+               ptKeeper->enumToStringPacketType(PacketTypeKeeperService::PacketTypeEnum::CONTINUE_SINGLE_GAME)){
 
     } else if(packetStr ==
-               ptKeeper->enumToString(PacketTypeKeeperService::PacketTypeEnum::JOIN_MULTI_GAME)){
+               ptKeeper->enumToStringPacketType(PacketTypeKeeperService::PacketTypeEnum::JOIN_MULTI_GAME)){
 
     }
 }

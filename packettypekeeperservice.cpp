@@ -1,4 +1,5 @@
 #include "packettypekeeperservice.h"
+#include "participant.h"
 
 PacketTypeKeeperService::PacketTypeKeeperService(QObject *parent)
     : QObject{parent}
@@ -29,17 +30,32 @@ PacketTypeKeeperService::PacketTypeKeeperService(QObject *parent)
     participantList.append(PacketTypeEnum::STEP_HAPPENED);
     participantList.append(PacketTypeEnum::UNDO_STEP_INITIATED);
     participantList.append(PacketTypeEnum::UNDO_STEP_APPROVED);
+
+    pieceColorMap.insert(Participant::ParticipantSideEnum::DARK, "DARK");
+    pieceColorMap.insert(Participant::ParticipantSideEnum::LIGHT, "LIGHT");
 }
 
-QString PacketTypeKeeperService::enumToString(PacketTypeEnum pT)
+QString PacketTypeKeeperService::enumToStringPacketType(PacketTypeEnum pT)
 {
     return packetMap[pT];
 }
 
-PacketTypeKeeperService::PacketTypeEnum PacketTypeKeeperService::stringToEnum(QString pTInString)
+PacketTypeKeeperService::PacketTypeEnum PacketTypeKeeperService::stringToEnumPacketType(QString pTInString)
 {
     for (auto it = packetMap.constBegin(); it != packetMap.constEnd(); ++it) {
         if(it.value() == pTInString) return it.key();
+    }
+}
+
+QString PacketTypeKeeperService::enumToStringPieceColor(Participant::ParticipantSideEnum pC)
+{
+    return pieceColorMap[pC];
+}
+
+Participant::ParticipantSideEnum PacketTypeKeeperService::stringToEnumPieceColor(QString pCInString)
+{
+    for (auto it = pieceColorMap.constBegin(); it != pieceColorMap.constEnd(); ++it) {
+        if(it.value() == pCInString) return it.key();
     }
 }
 /**
@@ -50,7 +66,7 @@ PacketTypeKeeperService::PacketTypeEnum PacketTypeKeeperService::stringToEnum(QS
 QString PacketTypeKeeperService::shouldServerHandle(QString packet)
 {
     for(int i = 0; i < serverList.size(); i++){
-        QString enumInStr = enumToString(serverList.at(i));
+        QString enumInStr = enumToStringPacketType(serverList.at(i));
         if(packet.startsWith(enumInStr)) return enumInStr;
     }
     return "";
@@ -64,7 +80,7 @@ QString PacketTypeKeeperService::shouldServerHandle(QString packet)
 QString PacketTypeKeeperService::shouldParticipantHandle(QString packet)
 {
     for(int i = 0; i < participantList.size(); i++){
-        QString enumInStr = enumToString(participantList.at(i));
+        QString enumInStr = enumToStringPacketType(participantList.at(i));
         if(packet.startsWith(enumInStr)) return enumInStr;
     }
     return "";

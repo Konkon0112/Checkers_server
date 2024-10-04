@@ -1,5 +1,5 @@
 #include "robotparticipant.h"
 
-RobotParticipant::RobotParticipant(QTcpSocket* socket, ParticipantSideEnum pS, QObject *parent)
-    : Participant{socket, ParticipantTypeEnum::PLAYER, pS, parent}
+RobotParticipant::RobotParticipant(ParticipantSideEnum pS, QObject *parent)
+    : Participant{ParticipantTypeEnum::PLAYER, pS, parent}
 {}

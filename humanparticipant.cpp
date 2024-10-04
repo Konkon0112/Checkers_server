@@ -1,8 +1,10 @@
 #include "humanparticipant.h"
 
-HumanParticipant::HumanParticipant(QTcpSocket* socket,
+HumanParticipant::HumanParticipant(QTcpSocket* s,
                                    ParticipantTypeEnum pT,
                                    ParticipantSideEnum pS,
                                    QObject *parent)
-    : Participant{socket, pT, pS, parent}
-{}
+    : Participant{pT, pS, parent}
+{
+    socket = s;
+}

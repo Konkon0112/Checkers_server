@@ -1,16 +1,14 @@
 #include "participant.h"
+#include "packettypekeeperservice.h"
 
-Participant::Participant(QTcpSocket* s,
-                         ParticipantTypeEnum pT,
+Participant::Participant(ParticipantTypeEnum pT,
                          ParticipantSideEnum pS,
                          QObject *parent)
     : QObject{parent}
 {
-    socket = s;
     pType = pT;
     pSide = pS;
     ptKeeper = new PacketTypeKeeperService(this);
-    connect(s, SIGNAL(readyRead()), this, SLOT(handlingReadyReadSlot()));
 }
 
 bool Participant::isPlayerType(ParticipantTypeEnum pT)

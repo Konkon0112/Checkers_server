@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QMap>
 #include <QList>
+#include "participant.h"
 
 class PacketTypeKeeperService : public QObject
 {
@@ -25,8 +26,11 @@ public:
 
     explicit PacketTypeKeeperService(QObject *parent = nullptr);
 
-    QString enumToString(PacketTypeEnum pT);
-    PacketTypeEnum stringToEnum(QString pTInString);
+    QString enumToStringPacketType(PacketTypeEnum pT);
+    PacketTypeEnum stringToEnumPacketType(QString pTInString);
+
+    QString enumToStringPieceColor(Participant::ParticipantSideEnum pC);
+    Participant::ParticipantSideEnum stringToEnumPieceColor(QString pCInString);
 
     QString shouldServerHandle(QString packet);
     QString shouldParticipantHandle(QString packet);
@@ -35,6 +39,7 @@ private:
     QList<PacketTypeEnum> participantList;
 
     QMap<PacketTypeEnum, QString> packetMap;
+    QMap<Participant::ParticipantSideEnum, QString> pieceColorMap;
     QString isServerHandledPacket(PacketTypeEnum pt);
     QString isParticipantHandledPacket(PacketTypeEnum pt);
 signals:

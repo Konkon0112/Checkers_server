@@ -15,6 +15,9 @@ public:
                               ParticipantSideEnum pS,
                               QObject *parent = nullptr);
 
+private:
+    QTcpSocket* socket;
+
 signals:
 };
 

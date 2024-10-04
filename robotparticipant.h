@@ -10,7 +10,7 @@ class RobotParticipant : public Participant
 {
     Q_OBJECT
 public:
-    explicit RobotParticipant(QTcpSocket* socket, ParticipantSideEnum pS , QObject *parent = nullptr);
+    explicit RobotParticipant(ParticipantSideEnum pS , QObject *parent = nullptr);
 
 signals:
 };

@@ -4,30 +4,28 @@
 #include <QObject>
 #include <QTcpSocket>
 
-#include "packettypekeeperservice.h"
 
+class PacketTypeKeeperService;
 class Participant : public QObject
 {
     Q_OBJECT
 public:
-    enum ParticipantTypeEnum {
+    enum class ParticipantTypeEnum {
         PLAYER,
         SPECTATOR,
     };
-    enum ParticipantSideEnum {
+    enum class ParticipantSideEnum {
         DARK,
         LIGHT,
         NONE,
     };
-    explicit Participant(QTcpSocket* s,
-                         ParticipantTypeEnum pT,
+    explicit Participant(ParticipantTypeEnum pT,
                          ParticipantSideEnum pS,
                          QObject *parent = nullptr);
 
     bool isPlayerType(ParticipantTypeEnum pT);
 
 private:
-    QTcpSocket* socket;
     PacketTypeKeeperService* ptKeeper;
     ParticipantTypeEnum pType;
     ParticipantSideEnum pSide;

@@ -11,17 +11,12 @@ void RoomBase::join(QTcpSocket *socket)
 {
     int pNum = countPlayersInRoom();
     HumanParticipant* hP;
-    if(pNum >= 2){
-        hP = new HumanParticipant(socket,
-                                  Participant::ParticipantTypeEnum::SPECTATOR,
-                                  Participant::ParticipantSideEnum::NONE,
-                                  this);
-    } else {
-        hP = new HumanParticipant(socket,
-                                  Participant::ParticipantTypeEnum::PLAYER,
-                                  Participant::ParticipantSideEnum::NONE,
-                                  this);
-    }
+    Participant::ParticipantTypeEnum pT = pNum >= 2? Participant::ParticipantTypeEnum::SPECTATOR:
+                                              Participant::ParticipantTypeEnum::PLAYER;
+    hP = new HumanParticipant(socket,
+                              pT,
+                              Participant::ParticipantSideEnum::NONE,
+                              this);
     this->pList.append(hP);
     //TODO: connect signals between room and participant
     // - start game
@@ -36,6 +31,11 @@ void RoomBase::join(QTcpSocket *socket)
         //TODO: emit start game signal
         //
     }
+}
+
+RoomBase::RoomState RoomBase::getRoomState() const
+{
+    return roomState;
 }
 
 int RoomBase::countPlayersInRoom()
