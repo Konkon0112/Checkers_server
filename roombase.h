@@ -51,6 +51,7 @@ private slots:
     void approveUndoSlot();
 
 signals:
+    void playerQuitGameSignal(QTcpSocket* socket);
     void gameStarted();
     void undoApprovedSignal();
     void stepHappenedSignal(QString step);

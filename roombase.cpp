@@ -40,6 +40,9 @@ void RoomBase::join(QTcpSocket *socket)
     connect(this, SIGNAL(undoApprovedSignal()), hP, SLOT(undoApprovedSlot()));
     // - game over
     connect(this, SIGNAL(gameOver(Participant::ParticipantSideEnum)), hP, SLOT(gameOverSlot(Participant::ParticipantSideEnum)));
+    // - player quit
+    connect(hP, SIGNAL(playerQuitSignal()), this, SLOT(playerQuitSlot()));
+
 
     this->pList.append(hP);
 
@@ -129,6 +132,15 @@ void RoomBase::stepInitiatedSlot(QString step)
 
 void RoomBase::playerQuitSlot()
 {
+    QObject* signalSender = sender();
+    HumanParticipant* participant = qobject_cast<HumanParticipant*>(signalSender);
+
+    emit playerQuitGameSignal(participant->getSocket());
+
+    pList.removeAll(participant);
+    qInfo() << participant << "left the game";
+
+    delete participant;
 
 }
 

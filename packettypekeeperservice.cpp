@@ -15,6 +15,7 @@ PacketTypeKeeperService::PacketTypeKeeperService(QObject *parent)
     packetMap.insert(PacketTypeEnum::STEP_HAPPENED, "STEP_HAPPENED");
     packetMap.insert(PacketTypeEnum::UNDO_STEP_INITIATED, "UNDO_STEP_INITIATED");
     packetMap.insert(PacketTypeEnum::UNDO_STEP_APPROVED, "UNDO_STEP_APPROVED");
+    packetMap.insert(PacketTypeEnum::APPROVE_UNDO, "APPROVE_UNDO");
 
     //Collect the packets the server object should handle
     serverList.append(PacketTypeEnum::JOIN_NEW_SINGLE_GAME);
@@ -22,14 +23,15 @@ PacketTypeKeeperService::PacketTypeKeeperService(QObject *parent)
     serverList.append(PacketTypeEnum::JOIN_MULTI_GAME);
 
     //Collect the packets the participant should handle
-    participantList.append(PacketTypeEnum::SEND_STEPS_SO_FAR);
+//    participantList.append(PacketTypeEnum::SEND_STEPS_SO_FAR);
     participantList.append(PacketTypeEnum::QUIT_GAME);
-    participantList.append(PacketTypeEnum::GAME_STARTED);
-    participantList.append(PacketTypeEnum::GAME_OVER);
+//    participantList.append(PacketTypeEnum::GAME_STARTED);
+//    participantList.append(PacketTypeEnum::GAME_OVER);
     participantList.append(PacketTypeEnum::INITIATE_STEP);
-    participantList.append(PacketTypeEnum::STEP_HAPPENED);
+//    participantList.append(PacketTypeEnum::STEP_HAPPENED);
     participantList.append(PacketTypeEnum::UNDO_STEP_INITIATED);
-    participantList.append(PacketTypeEnum::UNDO_STEP_APPROVED);
+//    participantList.append(PacketTypeEnum::UNDO_STEP_APPROVED);
+    participantList.append(PacketTypeEnum::APPROVE_UNDO);
 
     pieceColorMap.insert(Participant::ParticipantSideEnum::DARK, "DARK");
     pieceColorMap.insert(Participant::ParticipantSideEnum::LIGHT, "LIGHT");

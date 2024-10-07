@@ -10,6 +10,34 @@ HumanParticipant::HumanParticipant(QTcpSocket* s,
     connect(socket, SIGNAL(readyRead()), this, SLOT(handlingReadyReadSlot()));
 }
 
+HumanParticipant::~HumanParticipant()
+{
+    disconnect(socket, SIGNAL(readyRead()), this, SLOT(handlingReadyReadSlot()));
+}
+
+void HumanParticipant::handleIncommingPacket(QString packetStr, QString packetType)
+{
+    if(packetType ==
+        ptKeeper->enumToStringPacketType(PacketTypeKeeperService::PacketTypeEnum::INITIATE_STEP)){
+        qInfo() << socket << "INITIATE STEP";
+    } else if (packetType ==
+               ptKeeper->enumToStringPacketType(PacketTypeKeeperService::PacketTypeEnum::UNDO_STEP_INITIATED)) {
+        qInfo() << socket << "INITIATE UNDO";
+    } else if (packetType ==
+               ptKeeper->enumToStringPacketType(PacketTypeKeeperService::PacketTypeEnum::APPROVE_UNDO)) {
+        qInfo() << socket << "APPROVE UNDO";
+    } else if (packetType ==
+               ptKeeper->enumToStringPacketType(PacketTypeKeeperService::PacketTypeEnum::QUIT_GAME)) {
+        qInfo() << socket << "QUIT GAME";
+        emit playerQuitSignal();
+    }
+}
+
+QTcpSocket *HumanParticipant::getSocket() const
+{
+    return socket;
+}
+
 
 void HumanParticipant::handlingReadyReadSlot()
 {
@@ -17,13 +45,13 @@ void HumanParticipant::handlingReadyReadSlot()
     if(!socket)return;
 
     QByteArray data = socket->readAll();
-    qInfo() << "Received data:" << data;
+    qInfo() << "Data in participant" << data;
     QString dataTypeStr = ptKeeper->shouldParticipantHandle(data);
     if(dataTypeStr == ""){
         qInfo() << "Wrong packet: " << data;
         return;
     }
-    qInfo() << "Good packet:" << data;
+    handleIncommingPacket(QString(data), dataTypeStr);
 }
 
 void HumanParticipant::gameStartedSlot()

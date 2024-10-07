@@ -22,6 +22,7 @@ public:
         STEP_HAPPENED,
         UNDO_STEP_INITIATED,
         UNDO_STEP_APPROVED,
+        APPROVE_UNDO,
         UNKNOWN, // Need this in case some unknown string gets send from client
     };
 

@@ -16,7 +16,13 @@ public:
                               ParticipantSideEnum pS,
                               QObject *parent = nullptr);
 
+    ~HumanParticipant();
+
+    QTcpSocket *getSocket() const;
+
 private:
+    void handleIncommingPacket(QString packetStr, QString packetType);
+
     QTcpSocket* socket;
 
 signals:

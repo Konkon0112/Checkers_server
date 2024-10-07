@@ -56,10 +56,15 @@ void Server::readyRead()
 
     QByteArray data = socket->readAll();
     QString packetType = ptKeeper->shouldServerHandle(QString(data));
-
+    qInfo() << "Data in server" << data;
     if(packetType == "")return;
 
     handleIncommingPacket(QString(data), packetType, socket);
+}
+
+void Server::playerQuitGameSlot(QTcpSocket *socket)
+{
+    connect(socket,&QTcpSocket::readyRead,this,&Server::readyRead);
 }
 
 void Server::incomingConnection(qintptr handle)
@@ -93,10 +98,10 @@ void Server::handleIncommingPacket(QString packetStr, QString packetType, QTcpSo
                ptKeeper->enumToStringPacketType(PacketTypeKeeperService::PacketTypeEnum::JOIN_MULTI_GAME)) {
         joinMultiPlayer(packetStr, socket); //TODO: delete packet string if nothing added to it in the end
         qInfo() << socket << "Joined multiplayer";
-    }else {
-        qInfo() << "Not server's responsibility!" << packetStr;
     }
 
+    // Only join packets allowed here -> need to disconnect
+    disconnect(socket,&QTcpSocket::readyRead,this,&Server::readyRead);
 }
 
 void Server::handleJoinNewSinglePlayer(QString data, QTcpSocket* socket)
@@ -109,6 +114,7 @@ void Server::handleJoinNewSinglePlayer(QString data, QTcpSocket* socket)
             Participant::ParticipantSideEnum::LIGHT: Participant::ParticipantSideEnum::DARK;
 
     HumanVsRobotRoom* newRoom = new HumanVsRobotRoom(robotSideEnum, this);
+    connect(newRoom, SIGNAL(playerQuitGameSignal(QTcpSocket*)), this, SLOT(playerQuitGameSlot(QTcpSocket*)));
     newRoom->join(socket);
     rList.append(newRoom);
 }
@@ -121,10 +127,11 @@ void Server::handleContinueSinglePlayer(QString data, QTcpSocket* socket)
         dataList[1] == ptKeeper->enumToStringPieceColor(Participant::ParticipantSideEnum::DARK)?
             Participant::ParticipantSideEnum::LIGHT: Participant::ParticipantSideEnum::DARK;
 
-    Participant::ParticipantSideEnum colorOnTurn = ptKeeper->stringToEnumPieceColor(dataList[2]);
+    Participant::ParticipantSideEnum colorOnTurn = ptKeeper->stringToEnumPieceColor(dataList[1]);
     HumanVsRobotRoom* newRoom = new HumanVsRobotRoom(robotSideEnum, this);
 
-    newRoom->setUpContinuedGame(colorOnTurn, dataList[3]);
+    newRoom->setUpContinuedGame(colorOnTurn, dataList[2]);
+    connect(newRoom, SIGNAL(playerQuitGameSignal(QTcpSocket*)), this, SLOT(playerQuitGameSlot(QTcpSocket*)));
     newRoom->join(socket);
     rList.append(newRoom);
 }
@@ -143,5 +150,6 @@ void Server::joinMultiPlayer(QString data, QTcpSocket* socket)
         newRoom = new HumanVsHumanRoom(this);
         rList.append(newRoom);
     }
+    connect(newRoom, SIGNAL(playerQuitGameSignal(QTcpSocket*)), this, SLOT(playerQuitGameSlot(QTcpSocket*)));
     newRoom->join(socket);
 }

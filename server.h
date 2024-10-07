@@ -22,6 +22,8 @@ public slots:
     void disconnected();
     void readyRead();
 
+private slots:
+    void playerQuitGameSlot(QTcpSocket* socket);
 
 protected:
     void incomingConnection(qintptr handle) override;
