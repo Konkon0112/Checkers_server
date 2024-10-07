@@ -29,7 +29,11 @@ protected:
 signals:
 
 private:
-    void handleIncommingPacket(QString packetStr);
+    void handleIncommingPacket(QString packetStr, QString packetType, QTcpSocket* socket);
+
+    void handleJoinNewSinglePlayer(QString data, QTcpSocket* socket);
+    void handleContinueSinglePlayer(QString data, QTcpSocket* socket);
+    void joinMultiPlayer(QString data, QTcpSocket* socket);
 
     QList<QTcpSocket*> sList;
     QList<RoomBase*> rList;

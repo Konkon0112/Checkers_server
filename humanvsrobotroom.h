@@ -13,6 +13,7 @@ class HumanVsRobotRoom : public RoomBase
 public:
     explicit HumanVsRobotRoom(Participant::ParticipantSideEnum robotS, QObject *parent = nullptr);
 
+    void setUpContinuedGame(Participant::ParticipantSideEnum playerOnTurn, QString stepStr);
 private:
 signals:
 };

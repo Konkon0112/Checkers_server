@@ -14,10 +14,13 @@ public:
 
 signals:
 
+public slots:
+    void stepHappenedSlot(QString step) override;
+    void turnChangedSignal(Participant::ParticipantSideEnum nextOnTurn) override;
+    void undoApprovedSlot() override;
+
 protected slots:
     void gameStartedSlot() override;
-    void stepHappenedSlot() override;
-    void gameOverSlot() override;
     void turnChangedSlot() override;
 };
 

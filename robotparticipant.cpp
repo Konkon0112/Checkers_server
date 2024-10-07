@@ -9,12 +9,17 @@ void RobotParticipant::gameStartedSlot()
 
 }
 
-void RobotParticipant::stepHappenedSlot()
+void RobotParticipant::stepHappenedSlot(QString step)
 {
 
 }
 
-void RobotParticipant::gameOverSlot()
+void RobotParticipant::turnChangedSignal(ParticipantSideEnum nextOnTurn)
+{
+
+}
+
+void RobotParticipant::undoApprovedSlot()
 {
 
 }

@@ -6,6 +6,7 @@
 #include <QTcpSocket>
 
 #include "participant.h"
+#include "gamemodel.h"
 
 // Needed a base class for this, because I want to create the robot
 // player in the constructor of the HumanVsRobotRoom class
@@ -29,20 +30,32 @@ public:
 
     RoomState getRoomState() const;
 
+    RoomType getRoomType() const;
+
 protected:
     RoomType roomType;
     QList<Participant*> pList;
     RoomState roomState;
+    GameModel* gameModel;
+
+    Participant::ParticipantSideEnum playerOnTurn = Participant::ParticipantSideEnum::NONE;
 
 private:
     int countPlayersInRoom();
+    void startGame();
 
 private slots:
-    void readyRead();
+    void stepInitiatedSlot(QString step);
+    void playerQuitSlot();
+    void undoInitiatedSlot();
+    void approveUndoSlot();
 
 signals:
-
-    void gameOver(QList<QTcpSocket*> pSocketList);
+    void gameStarted();
+    void undoApprovedSignal();
+    void stepHappenedSignal(QString step);
+    void gameOver(Participant::ParticipantSideEnum winner);
+    void turnChangedSignal(Participant::ParticipantSideEnum nextOnTurn);
 };
 
 #endif // ROOMBASE_H

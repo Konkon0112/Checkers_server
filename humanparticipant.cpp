@@ -31,12 +31,22 @@ void HumanParticipant::gameStartedSlot()
 
 }
 
-void HumanParticipant::stepHappenedSlot()
+void HumanParticipant::stepHappenedSlot(QString step)
 {
 
 }
 
-void HumanParticipant::gameOverSlot()
+void HumanParticipant::undoApprovedSlot()
+{
+
+}
+
+void HumanParticipant::gameOverSlot(Participant::ParticipantSideEnum winner)
+{
+
+}
+
+void HumanParticipant::turnChangedSignal(ParticipantSideEnum nextOnTurn)
 {
 
 }

@@ -22,6 +22,7 @@ add_executable(checkers_backend
   humanvsrobotroom.h humanvsrobotroom.cpp
   humanparticipant.h humanparticipant.cpp
   robotparticipant.h robotparticipant.cpp
+  gamemodel.h gamemodel.cpp
 )
 
 target_link_libraries(checkers_backend Qt${QT_VERSION_MAJOR}::Core Qt6::Network)

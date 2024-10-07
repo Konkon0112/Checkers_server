@@ -10,3 +10,10 @@ HumanVsRobotRoom::HumanVsRobotRoom(Participant::ParticipantSideEnum robotS, QObj
     RobotParticipant* rParticipant = new RobotParticipant(robotS, this);
     pList.append(rParticipant);
 }
+
+void HumanVsRobotRoom::setUpContinuedGame(Participant::ParticipantSideEnum playerOnTurn, QString stepStr)
+{
+    // recreate table in game model
+    this->playerOnTurn = playerOnTurn;
+    qInfo() << "Setting up continued game";
+}

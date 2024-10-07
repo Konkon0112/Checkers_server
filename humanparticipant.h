@@ -20,12 +20,17 @@ private:
     QTcpSocket* socket;
 
 signals:
+    void undoInitiatedSignal();
+
+public slots:
+    void stepHappenedSlot(QString step) override;
+    void undoApprovedSlot() override;
+    void gameStartedSlot() override;
+    void gameOverSlot(Participant::ParticipantSideEnum winner);
+    void turnChangedSignal(Participant::ParticipantSideEnum nextOnTurn) override;
 
 protected slots:
     void handlingReadyReadSlot();
-    void gameStartedSlot() override;
-    void stepHappenedSlot() override;
-    void gameOverSlot() override;
     void turnChangedSlot() override;
 };
 

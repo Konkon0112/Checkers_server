@@ -24,6 +24,13 @@ public:
                          QObject *parent = nullptr);
 
     bool isPlayerType(ParticipantTypeEnum pT);
+    bool isPlayerSide(ParticipantSideEnum pC);
+
+    ParticipantTypeEnum getPType() const;
+
+    void setPSide(ParticipantSideEnum newPSide);
+
+    ParticipantSideEnum getPSide() const;
 
 protected:
     PacketTypeKeeperService* ptKeeper;
@@ -35,13 +42,23 @@ private:
 signals:
     void playerQuitSignal();
     void stepInitiatedSignal(QString step);
-    void undoInitiatedSignal();
-    void undoApprovedSignal();
+    void approveUndoSignal();
+
+public slots:
+    //[packet type]#[the color the player is using]#[steps so far]
+    virtual void gameStartedSlot() = 0;
+    //[packet type]#[step as string]
+    virtual void stepHappenedSlot(QString step) = 0;
+
+    virtual void undoApprovedSlot() = 0;
+
+    virtual void turnChangedSignal(Participant::ParticipantSideEnum nextOnTurn) = 0;
 
 protected slots:
-    virtual void gameStartedSlot() = 0;
-    virtual void stepHappenedSlot() = 0;
-    virtual void gameOverSlot() = 0;
+
+
+
+    //[packet type]#[color on turn]
     virtual void turnChangedSlot() = 0;
 };
 
