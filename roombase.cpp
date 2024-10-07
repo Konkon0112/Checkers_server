@@ -31,9 +31,9 @@ void RoomBase::join(QTcpSocket *socket)
     // - send steps so far (maybe don't need this)
 
     // - turn changed
-
+    connect(this, SIGNAL(turnChangedSignal(Participant::ParticipantSideEnum)), hP, SLOT(turnChangedSignal(Participant::ParticipantSideEnum)));
     // - initiate undo
-    connect(hP, SIGNAL(undoInitiatedSignal()), this, SLOT(undoInitiated()));
+    connect(hP, SIGNAL(undoInitiatedSignal()), this, SLOT(undoInitiatedSlot()));
     // - approve undo
     connect(hP, SIGNAL(approveUndoSignal()), this, SLOT(approveUndoSlot()));
     // - undo approved

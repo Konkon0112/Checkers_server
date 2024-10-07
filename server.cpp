@@ -46,6 +46,7 @@ void Server::disconnected()
     disconnect(socket,&QTcpSocket::disconnected,this,&Server::disconnected);
     disconnect(socket,&QTcpSocket::readyRead,this,&Server::readyRead);
     socket->deleteLater();
+    //TODO: check if there is game related to player
 }
 
 void Server::readyRead()
