@@ -32,17 +32,16 @@ public:
 
     RoomType getRoomType() const;
 
+    bool thereIsPlayerWithSocket(QTcpSocket* socket);
+
 protected:
     RoomType roomType;
     QList<Participant*> pList;
     RoomState roomState;
     GameModel* gameModel;
 
-    Participant::ParticipantSideEnum playerOnTurn = Participant::ParticipantSideEnum::NONE;
-
 private:
     int countPlayersInRoom();
-    void startGame();
 
 private slots:
     void stepInitiatedSlot(QString step);
@@ -53,7 +52,7 @@ private slots:
 
 signals:
     void playerQuitGameSignal(QTcpSocket* socket);
-    void gameStarted();
+    void gameStartedSignal(Participant::ParticipantSideEnum colorOnTurn, QString stepsSoFar);
     void undoApprovedSignal();
     void stepHappenedSignal(QString step); // Sent to players
     void gameOver(Participant::ParticipantSideEnum winner);

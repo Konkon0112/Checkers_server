@@ -11,6 +11,7 @@ class RobotParticipant : public Participant
     Q_OBJECT
 public:
     explicit RobotParticipant(ParticipantSideEnum pS , QObject *parent = nullptr);
+    bool usingThisSocket(QTcpSocket* soc) override;
 
 signals:
 
@@ -20,7 +21,7 @@ public slots:
     void undoApprovedSlot() override;
 
 protected slots:
-    void gameStartedSlot() override;
+    void gameStartedSlot(Participant::ParticipantSideEnum nextOnTurn, QString stepsSoFar) override;
     void turnChangedSlot() override;
 };
 

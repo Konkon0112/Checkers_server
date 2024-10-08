@@ -32,6 +32,8 @@ public:
 
     ParticipantSideEnum getPSide() const;
 
+    virtual bool usingThisSocket(QTcpSocket* soc) = 0;
+
 protected:
     PacketTypeKeeperService* ptKeeper;
     ParticipantTypeEnum pType;
@@ -45,9 +47,9 @@ signals:
     void approveUndoSignal();
 
 public slots:
-    //[packet type]#[the color the player is using]#[steps so far]
-    virtual void gameStartedSlot() = 0;
-    //[packet type]#[step as string]
+
+    virtual void gameStartedSlot(Participant::ParticipantSideEnum nextOnTurn, QString stepsSoFar) = 0;
+
     virtual void stepHappenedSlot(QString step) = 0;
 
     virtual void undoApprovedSlot() = 0;

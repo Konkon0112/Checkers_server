@@ -89,3 +89,8 @@ QString PacketTypeKeeperService::shouldParticipantHandle(QString packet)
     }
     return "";
 }
+
+QByteArray PacketTypeKeeperService::getPacketSeparator()
+{
+    return QString("#").toUtf8();
+}

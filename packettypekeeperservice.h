@@ -36,6 +36,8 @@ public:
 
     QString shouldServerHandle(QString packet);
     QString shouldParticipantHandle(QString packet);
+
+    QByteArray getPacketSeparator();
 private:
     QList<PacketTypeEnum> serverList;
     QList<PacketTypeEnum> participantList;

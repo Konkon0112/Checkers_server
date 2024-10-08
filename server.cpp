@@ -129,8 +129,8 @@ void Server::handleContinueSinglePlayer(QString data, QTcpSocket* socket)
 
     Participant::ParticipantSideEnum colorOnTurn = ptKeeper->stringToEnumPieceColor(dataList[1]);
     HumanVsRobotRoom* newRoom = new HumanVsRobotRoom(robotSideEnum, this);
-
     newRoom->setUpContinuedGame(colorOnTurn, dataList[2]);
+
     connect(newRoom, SIGNAL(playerQuitGameSignal(QTcpSocket*)), this, SLOT(playerQuitGameSlot(QTcpSocket*)));
     newRoom->join(socket);
     rList.append(newRoom);

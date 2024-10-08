@@ -19,6 +19,7 @@ public:
     ~HumanParticipant();
 
     QTcpSocket *getSocket() const;
+    bool usingThisSocket(QTcpSocket* soc) override;
 
 private:
     void handleIncommingPacket(QString packetStr, QString packetType);
@@ -31,7 +32,7 @@ signals:
 public slots:
     void stepHappenedSlot(QString step) override;
     void undoApprovedSlot() override;
-    void gameStartedSlot() override;
+    void gameStartedSlot(Participant::ParticipantSideEnum nextOnTurn, QString stepsSoFar) override;
     void gameOverSlot(Participant::ParticipantSideEnum winner);
     void turnChangedSignal(Participant::ParticipantSideEnum nextOnTurn) override;
 

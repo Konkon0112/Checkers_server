@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QList>
+#include <QStringList>
 
 #include "board.h"
 #include "packettypekeeperservice.h"
@@ -19,6 +20,8 @@ public:
     void passStepForward(QString step);
     void undoStep(Participant::ParticipantSideEnum playerWhoInitiated);
     Participant::ParticipantSideEnum getColorOnTurn() const;
+    QString getJoinedStepStr();
+    void setColorOnTurn(Participant::ParticipantSideEnum newColorOnTurn);
 
 signals:
     void stepHappenedSignal(QString step);
@@ -29,6 +32,7 @@ private:
     Participant::ParticipantSideEnum colorOnTurn;
     Board* board;
     QList<ValidatorBase*> validators;
+    QStringList stepList;
 };
 
 #endif // GAMEMODEL_H

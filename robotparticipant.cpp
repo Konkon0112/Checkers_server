@@ -4,7 +4,12 @@ RobotParticipant::RobotParticipant(ParticipantSideEnum pS, QObject *parent)
     : Participant{ParticipantTypeEnum::PLAYER, pS, parent}
 {}
 
-void RobotParticipant::gameStartedSlot()
+bool RobotParticipant::usingThisSocket(QTcpSocket *soc)
+{
+    return false;
+}
+
+void RobotParticipant::gameStartedSlot(Participant::ParticipantSideEnum nextOnTurn, QString stepsSoFar)
 {
 
 }

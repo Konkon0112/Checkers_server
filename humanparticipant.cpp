@@ -20,6 +20,8 @@ void HumanParticipant::handleIncommingPacket(QString packetStr, QString packetTy
     if(packetType ==
         ptKeeper->enumToStringPacketType(PacketTypeKeeperService::PacketTypeEnum::INITIATE_STEP)){
         qInfo() << socket << "INITIATE STEP";
+        QStringList seperatedPacket = packetStr.split(ptKeeper->getPacketSeparator());
+        emit stepInitiatedSignal(seperatedPacket[1]);
     } else if (packetType ==
                ptKeeper->enumToStringPacketType(PacketTypeKeeperService::PacketTypeEnum::UNDO_STEP_INITIATED)) {
         qInfo() << socket << "INITIATE UNDO";
@@ -38,6 +40,11 @@ QTcpSocket *HumanParticipant::getSocket() const
     return socket;
 }
 
+bool HumanParticipant::usingThisSocket(QTcpSocket* soc)
+{
+    return soc == socket;
+}
+
 
 void HumanParticipant::handlingReadyReadSlot()
 {
@@ -54,14 +61,33 @@ void HumanParticipant::handlingReadyReadSlot()
     handleIncommingPacket(QString(data), dataTypeStr);
 }
 
-void HumanParticipant::gameStartedSlot()
+void HumanParticipant::gameStartedSlot(Participant::ParticipantSideEnum nextOnTurn, QString stepsSoFar)
 {
+    QString packetType = ptKeeper->enumToStringPacketType(PacketTypeKeeperService::PacketTypeEnum::GAME_STARTED);
+    QString nextColor = ptKeeper->enumToStringPieceColor(nextOnTurn);
+    QString playerColor = ptKeeper->enumToStringPieceColor(getPSide());
 
+    QByteArray message;
+    message.append(packetType.toUtf8());
+    message.append(ptKeeper->getPacketSeparator());
+    message.append(nextColor.toUtf8());
+    message.append(ptKeeper->getPacketSeparator());
+    message.append(playerColor.toUtf8());
+    message.append(ptKeeper->getPacketSeparator());
+    message.append(stepsSoFar.toUtf8());
+
+    socket->write(message);
 }
 
 void HumanParticipant::stepHappenedSlot(QString step)
 {
+    QString packetType = ptKeeper->enumToStringPacketType(PacketTypeKeeperService::PacketTypeEnum::STEP_HAPPENED);
 
+    QByteArray message;
+    message.append(packetType.toUtf8());
+    message.append(ptKeeper->getPacketSeparator());
+    message.append(step.toUtf8());
+    socket->write(message);
 }
 
 void HumanParticipant::undoApprovedSlot()

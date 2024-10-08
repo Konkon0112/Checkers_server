@@ -41,7 +41,7 @@ void RoomBase::join(QTcpSocket *socket)
 
     //TODO: connect signals between room and participant
     // - start game
-    connect(this, SIGNAL(gameStarted()), hP, SLOT(gameStartedSlot()));
+    connect(this, SIGNAL(gameStartedSignal(Participant::ParticipantSideEnum, QString)), hP, SLOT(gameStartedSlot(Participant::ParticipantSideEnum, QString)));
     // - initiate step
     connect(hP, SIGNAL(stepInitiatedSignal(QString)), this, SLOT(stepInitiatedSlot(QString)));
     // - step happened
@@ -64,8 +64,8 @@ void RoomBase::join(QTcpSocket *socket)
 
     this->pList.append(hP);
 
-    if(pNum == 1){ // That means now there are two players now
-        emit gameStarted();
+    if(pNum >= 1){
+        emit gameStartedSignal(gameModel->getColorOnTurn(), gameModel->getJoinedStepStr());
     }
 }
 
@@ -79,6 +79,14 @@ RoomBase::RoomType RoomBase::getRoomType() const
     return roomType;
 }
 
+bool RoomBase::thereIsPlayerWithSocket(QTcpSocket *socket)
+{
+    for(int i = 0; i < pList.length(); i++){
+        if(pList.at(i)->usingThisSocket(socket)) return true;
+    }
+    return false;
+}
+
 int RoomBase::countPlayersInRoom()
 {
     int numofP = 0;
@@ -88,11 +96,6 @@ int RoomBase::countPlayersInRoom()
         }
     }
     return numofP;
-}
-
-void RoomBase::startGame()
-{
-    emit gameStarted();
 }
 
 void RoomBase::stepInitiatedSlot(QString step)

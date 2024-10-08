@@ -14,6 +14,10 @@ HumanVsRobotRoom::HumanVsRobotRoom(Participant::ParticipantSideEnum robotS, QObj
 void HumanVsRobotRoom::setUpContinuedGame(Participant::ParticipantSideEnum playerOnTurn, QString stepStr)
 {
     // recreate table in game model
-    this->playerOnTurn = playerOnTurn;
-    qInfo() << "Setting up continued game";
+    playerOnTurn = playerOnTurn;
+    gameModel->setColorOnTurn(playerOnTurn);
+    QStringList steps = stepStr.split(';');
+    for(int i = 0; i < steps.length(); i++){
+        gameModel->passStepForward(steps.at(i));
+    }
 }
