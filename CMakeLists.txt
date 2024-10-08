@@ -23,6 +23,10 @@ add_executable(checkers_backend
   humanparticipant.h humanparticipant.cpp
   robotparticipant.h robotparticipant.cpp
   gamemodel.h gamemodel.cpp
+  board.h board.cpp
+  validatorbase.h validatorbase.cpp
+  validatorpawn.h validatorpawn.cpp
+  validatordame.h validatordame.cpp
 )
 
 target_link_libraries(checkers_backend Qt${QT_VERSION_MAJOR}::Core Qt6::Network)

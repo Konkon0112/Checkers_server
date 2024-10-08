@@ -8,6 +8,7 @@ RoomBase::RoomBase(RoomState rs, QObject *parent)
 {
     roomState = rs;
     gameModel = new GameModel(this);
+    connect(gameModel, SIGNAL(stepHappenedSignal(QString)), this, SLOT(stepHappenedSlot(QString)));
 }
 
 void RoomBase::join(QTcpSocket *socket)
@@ -99,6 +100,11 @@ void RoomBase::stepInitiatedSlot(QString step)
     // Check if right player
     //  - player on turn
     //  - player color and piece color match
+    QObject* signalSender = sender();
+    Participant* participant = qobject_cast<Participant*>(signalSender);
+    if(!participant->isPlayerSide(gameModel->getColorOnTurn())) return;
+
+    gameModel->passStepForward(step);
 }
 
 void RoomBase::playerQuitSlot()
@@ -123,5 +129,10 @@ void RoomBase::undoInitiatedSlot()
 void RoomBase::approveUndoSlot()
 {
 
+}
+
+void RoomBase::stepHappenedSlot(QString step)
+{
+    emit stepHappenedSignal(step);
 }
 
