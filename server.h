@@ -31,7 +31,7 @@ protected:
 signals:
 
 private:
-    void handleIncommingPacket(QString packetStr, QString packetType, QTcpSocket* socket);
+    void handleIncommingPacket(QString packetStr, QTcpSocket* socket);
 
     void handleJoinNewSinglePlayer(QString data, QTcpSocket* socket);
     void handleContinueSinglePlayer(QString data, QTcpSocket* socket);

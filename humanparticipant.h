@@ -22,7 +22,8 @@ public:
     bool usingThisSocket(QTcpSocket* soc) override;
 
 private:
-    void handleIncommingPacket(QString packetStr, QString packetType);
+    void sendMessage(QByteArray message);
+    void handleIncommingPacket(QString packetStr);
 
     QTcpSocket* socket;
 

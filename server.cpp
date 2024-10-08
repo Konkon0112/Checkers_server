@@ -43,8 +43,8 @@ void Server::disconnected()
     qInfo() << "Socket disconnected" << socket;
 
     sList.removeAll(socket);
-    disconnect(socket,&QTcpSocket::disconnected,this,&Server::disconnected);
-    disconnect(socket,&QTcpSocket::readyRead,this,&Server::readyRead);
+    disconnect(socket, SIGNAL(disconnected()),this,SLOT(disconnected()));
+    disconnect(socket, SIGNAL(readyRead()), this, SLOT(readyRead()));
     socket->deleteLater();
     //TODO: check if there is game related to player
 }
@@ -55,16 +55,21 @@ void Server::readyRead()
     if(!socket)return;
 
     QByteArray data = socket->readAll();
-    QString packetType = ptKeeper->shouldServerHandle(QString(data));
-    qInfo() << "Data in server" << data;
-    if(packetType == "")return;
+    QString dataAsString(data);
+    QStringList dataList = dataAsString.split('\n');
 
-    handleIncommingPacket(QString(data), packetType, socket);
+    for(int i = 0; i < dataList.length(); i++){
+        if(dataList.at(i) == "") return;
+        QString packetType = ptKeeper->shouldServerHandle(QString(data));
+
+        if(packetType == "")return;
+        handleIncommingPacket(dataList.at(i), socket);
+    }
 }
 
 void Server::playerQuitGameSlot(QTcpSocket *socket)
 {
-    connect(socket,&QTcpSocket::readyRead,this,&Server::readyRead);
+    connect(socket, SIGNAL(readyRead()),this, SLOT(readyRead()));
 }
 
 void Server::incomingConnection(qintptr handle)
@@ -79,13 +84,15 @@ void Server::incomingConnection(qintptr handle)
     }
 
     sList.append(socket);
-    connect(socket,&QTcpSocket::disconnected,this,&Server::disconnected);
-    connect(socket,&QTcpSocket::readyRead,this,&Server::readyRead);
+    connect(socket, SIGNAL(disconnected()),this, SLOT(disconnected()));
+    connect(socket,SIGNAL(readyRead()),this, SLOT(readyRead()));
     qInfo() << "Connection received";
 }
 
-void Server::handleIncommingPacket(QString packetStr, QString packetType, QTcpSocket* socket)
+void Server::handleIncommingPacket(QString packetStr, QTcpSocket* socket)
 {
+    QString packetType = ptKeeper->shouldServerHandle(packetStr);
+    if(packetType == "") return;
     if(packetType ==
         ptKeeper->enumToStringPacketType(PacketTypeKeeperService::PacketTypeEnum::JOIN_NEW_SINGLE_GAME)){
         handleJoinNewSinglePlayer(packetStr, socket);
@@ -101,7 +108,7 @@ void Server::handleIncommingPacket(QString packetStr, QString packetType, QTcpSo
     }
 
     // Only join packets allowed here -> need to disconnect
-    disconnect(socket,&QTcpSocket::readyRead,this,&Server::readyRead);
+    disconnect(socket,SIGNAL(readyRead()), this, SLOT(readyRead()));
 }
 
 void Server::handleJoinNewSinglePlayer(QString data, QTcpSocket* socket)

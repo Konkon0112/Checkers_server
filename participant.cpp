@@ -35,3 +35,4 @@ Participant::ParticipantSideEnum Participant::getPSide() const
 {
     return pSide;
 }
+

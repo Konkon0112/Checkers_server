@@ -15,8 +15,9 @@ HumanParticipant::~HumanParticipant()
     disconnect(socket, SIGNAL(readyRead()), this, SLOT(handlingReadyReadSlot()));
 }
 
-void HumanParticipant::handleIncommingPacket(QString packetStr, QString packetType)
+void HumanParticipant::handleIncommingPacket(QString packetStr)
 {
+    QString packetType = ptKeeper->shouldParticipantHandle(packetStr);
     if(packetType ==
         ptKeeper->enumToStringPacketType(PacketTypeKeeperService::PacketTypeEnum::INITIATE_STEP)){
         qInfo() << socket << "INITIATE STEP";
@@ -52,13 +53,17 @@ void HumanParticipant::handlingReadyReadSlot()
     if(!socket)return;
 
     QByteArray data = socket->readAll();
-    qInfo() << "Data in participant" << data;
-    QString dataTypeStr = ptKeeper->shouldParticipantHandle(data);
-    if(dataTypeStr == ""){
-        qInfo() << "Wrong packet: " << data;
-        return;
+    QString dataAsString(data);
+    QStringList dataList = dataAsString.split('\n');
+
+    for(int i = 0; i < dataList.length(); i++){
+        if(dataList.at(i) == "") return;
+        QString packetType = ptKeeper->shouldParticipantHandle(QString(data));
+
+        if(packetType == "")return;
+        handleIncommingPacket(QString(dataList.at(i)));
     }
-    handleIncommingPacket(QString(data), dataTypeStr);
+
 }
 
 void HumanParticipant::gameStartedSlot(Participant::ParticipantSideEnum nextOnTurn, QString stepsSoFar)
@@ -76,7 +81,7 @@ void HumanParticipant::gameStartedSlot(Participant::ParticipantSideEnum nextOnTu
     message.append(ptKeeper->getPacketSeparator());
     message.append(stepsSoFar.toUtf8());
 
-    socket->write(message);
+    sendMessage(message);
 }
 
 void HumanParticipant::stepHappenedSlot(QString step)
@@ -87,7 +92,8 @@ void HumanParticipant::stepHappenedSlot(QString step)
     message.append(packetType.toUtf8());
     message.append(ptKeeper->getPacketSeparator());
     message.append(step.toUtf8());
-    socket->write(message);
+
+    sendMessage(message);
 }
 
 void HumanParticipant::undoApprovedSlot()
@@ -110,5 +116,14 @@ void HumanParticipant::turnChangedSlot(Participant::ParticipantSideEnum nextOnTu
     message.append(ptKeeper->getPacketSeparator());
     message.append(nextColor.toUtf8());
 
+    sendMessage(message);
+}
+
+void HumanParticipant::sendMessage(QByteArray message)
+{
+    // We are using delimeter based protocol
+    // Because of the changing packet sizes
+    message.append('\n');
     socket->write(message);
+    socket->flush();
 }
