@@ -10,9 +10,9 @@ class ValidatorPawn : public ValidatorBase
     Q_OBJECT
 public:
     explicit ValidatorPawn(QObject *parent = nullptr);
+    QSet<QString> getValidIndecies(int startInd, QString board) override;
 
 private:
-    QSet<QString> getValidIndecies(int startInd, QString board) override;
 
 signals:
 };

@@ -100,12 +100,15 @@ void HumanParticipant::gameOverSlot(Participant::ParticipantSideEnum winner)
 
 }
 
-void HumanParticipant::turnChangedSignal(ParticipantSideEnum nextOnTurn)
+void HumanParticipant::turnChangedSlot(Participant::ParticipantSideEnum nextOnTurn)
 {
+    QString packetType = ptKeeper->enumToStringPacketType(PacketTypeKeeperService::PacketTypeEnum::TURN_CHANGED);
+    QString nextColor = ptKeeper->enumToStringPieceColor(nextOnTurn);
 
-}
+    QByteArray message;
+    message.append(packetType.toUtf8());
+    message.append(ptKeeper->getPacketSeparator());
+    message.append(nextColor.toUtf8());
 
-void HumanParticipant::turnChangedSlot()
-{
-
+    socket->write(message);
 }

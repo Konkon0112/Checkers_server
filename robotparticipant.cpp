@@ -19,17 +19,12 @@ void RobotParticipant::stepHappenedSlot(QString step)
 
 }
 
-void RobotParticipant::turnChangedSignal(ParticipantSideEnum nextOnTurn)
-{
-
-}
-
 void RobotParticipant::undoApprovedSlot()
 {
 
 }
 
-void RobotParticipant::turnChangedSlot()
+void RobotParticipant::turnChangedSlot(Participant::ParticipantSideEnum nextOnTurn)
 {
 
 }

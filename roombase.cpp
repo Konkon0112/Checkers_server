@@ -9,6 +9,7 @@ RoomBase::RoomBase(RoomState rs, QObject *parent)
     roomState = rs;
     gameModel = new GameModel(this);
     connect(gameModel, SIGNAL(stepHappenedSignal(QString)), this, SLOT(stepHappenedSlot(QString)));
+    connect(gameModel, SIGNAL(turnChangedSignal(Participant::ParticipantSideEnum)), this, SLOT(turnChangedSlot(Participant::ParticipantSideEnum)));
 }
 
 void RoomBase::join(QTcpSocket *socket)
@@ -49,7 +50,7 @@ void RoomBase::join(QTcpSocket *socket)
     // - send steps so far (maybe don't need this)
 
     // - turn changed
-    connect(this, SIGNAL(turnChangedSignal(Participant::ParticipantSideEnum)), hP, SLOT(turnChangedSignal(Participant::ParticipantSideEnum)));
+    connect(this, SIGNAL(turnChangedSignal(Participant::ParticipantSideEnum)), hP, SLOT(turnChangedSlot(Participant::ParticipantSideEnum)));
     // - initiate undo
     connect(hP, SIGNAL(undoInitiatedSignal()), this, SLOT(undoInitiatedSlot()));
     // - approve undo
@@ -137,5 +138,10 @@ void RoomBase::approveUndoSlot()
 void RoomBase::stepHappenedSlot(QString step)
 {
     emit stepHappenedSignal(step);
+}
+
+void RoomBase::turnChangedSlot(Participant::ParticipantSideEnum nextOnTurn)
+{
+    emit turnChangedSignal(nextOnTurn);
 }
 

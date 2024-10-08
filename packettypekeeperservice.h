@@ -20,6 +20,7 @@ public:
         GAME_OVER,
         INITIATE_STEP,
         STEP_HAPPENED,
+        TURN_CHANGED,
         UNDO_STEP_INITIATED,
         UNDO_STEP_APPROVED,
         APPROVE_UNDO,

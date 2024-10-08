@@ -13,9 +13,9 @@ public:
     explicit ValidatorBase(QObject *parent = nullptr);
     bool isValidatorsResponsibility(QChar c);
     bool isValidStep(QString step, QString board);
+    virtual QSet<QString> getValidIndecies(int startInd, QString board) = 0;
 
 private:
-    virtual QSet<QString> getValidIndecies(int startInd, QString board) = 0;
     int getIndFromCoordinates(QPair<int, int> coord);
     void getSteps(int sRow, int sCol, int dX, int dY, int maxIteration, QString board, QSet<QString> &validContainer);
     void checkIfPieceTakeable(int tCol, int tRow, int dx, int dY, int sInd, QString board, QSet<QString> &validContainer);

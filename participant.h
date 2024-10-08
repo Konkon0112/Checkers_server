@@ -54,14 +54,9 @@ public slots:
 
     virtual void undoApprovedSlot() = 0;
 
-    virtual void turnChangedSignal(Participant::ParticipantSideEnum nextOnTurn) = 0;
+    virtual void turnChangedSlot(Participant::ParticipantSideEnum nextOnTurn) = 0;
 
 protected slots:
-
-
-
-    //[packet type]#[color on turn]
-    virtual void turnChangedSlot() = 0;
 };
 
 #endif // PARTICIPANT_H

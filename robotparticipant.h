@@ -17,12 +17,11 @@ signals:
 
 public slots:
     void stepHappenedSlot(QString step) override;
-    void turnChangedSignal(Participant::ParticipantSideEnum nextOnTurn) override;
+    void turnChangedSlot(Participant::ParticipantSideEnum nextOnTurn) override;
     void undoApprovedSlot() override;
 
 protected slots:
     void gameStartedSlot(Participant::ParticipantSideEnum nextOnTurn, QString stepsSoFar) override;
-    void turnChangedSlot() override;
 };
 
 #endif // ROBOTPARTICIPANT_H

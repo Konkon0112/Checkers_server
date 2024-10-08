@@ -13,6 +13,7 @@ PacketTypeKeeperService::PacketTypeKeeperService(QObject *parent)
     packetMap.insert(PacketTypeEnum::GAME_OVER, "GAME_OVER");
     packetMap.insert(PacketTypeEnum::INITIATE_STEP, "INITIATE_STEP");
     packetMap.insert(PacketTypeEnum::STEP_HAPPENED, "STEP_HAPPENED");
+    packetMap.insert(PacketTypeEnum::TURN_CHANGED, "TURN_CHANGED");
     packetMap.insert(PacketTypeEnum::UNDO_STEP_INITIATED, "UNDO_STEP_INITIATED");
     packetMap.insert(PacketTypeEnum::UNDO_STEP_APPROVED, "UNDO_STEP_APPROVED");
     packetMap.insert(PacketTypeEnum::APPROVE_UNDO, "APPROVE_UNDO");

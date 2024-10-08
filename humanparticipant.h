@@ -34,11 +34,10 @@ public slots:
     void undoApprovedSlot() override;
     void gameStartedSlot(Participant::ParticipantSideEnum nextOnTurn, QString stepsSoFar) override;
     void gameOverSlot(Participant::ParticipantSideEnum winner);
-    void turnChangedSignal(Participant::ParticipantSideEnum nextOnTurn) override;
+    void turnChangedSlot(Participant::ParticipantSideEnum nextOnTurn) override;
 
 protected slots:
     void handlingReadyReadSlot();
-    void turnChangedSlot() override;
 };
 
 #endif // HUMANPARTICIPANT_H
