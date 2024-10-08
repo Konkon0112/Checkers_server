@@ -12,13 +12,30 @@ RoomBase::RoomBase(RoomState rs, QObject *parent)
 
 void RoomBase::join(QTcpSocket *socket)
 {
-    int pNum = countPlayersInRoom();
+    int pNum = pList.length();
     HumanParticipant* hP;
+
     Participant::ParticipantTypeEnum pT = pNum >= 2? Participant::ParticipantTypeEnum::SPECTATOR:
                                               Participant::ParticipantTypeEnum::PLAYER;
+    Participant::ParticipantSideEnum pS;
+    if(pNum == 0){
+        int randomNumber = QRandomGenerator::global()->bounded(1, 101);
+
+        pS =
+            randomNumber > 50? Participant::ParticipantSideEnum::DARK:
+                Participant::ParticipantSideEnum::LIGHT;
+    } else if(pNum == 1){
+        pS =
+            pList.at(0)->isPlayerSide(Participant::ParticipantSideEnum::DARK)?
+                Participant::ParticipantSideEnum::LIGHT:
+                Participant::ParticipantSideEnum::DARK;
+    } else {
+        pS = Participant::ParticipantSideEnum::NONE;
+    }
+
     hP = new HumanParticipant(socket,
                               pT,
-                              Participant::ParticipantSideEnum::NONE,
+                              pS,
                               this);
 
     //TODO: connect signals between room and participant
@@ -47,7 +64,7 @@ void RoomBase::join(QTcpSocket *socket)
     this->pList.append(hP);
 
     if(pNum == 1){ // That means now there are two players now
-        startGame();
+        emit gameStarted();
     }
 }
 
@@ -74,52 +91,6 @@ int RoomBase::countPlayersInRoom()
 
 void RoomBase::startGame()
 {
-    QList<Participant*> players;
-    for(int i = 0; i < pList.length(); i++){
-        if(pList.at(i)->isPlayerType(Participant::ParticipantTypeEnum::PLAYER))
-            players.append(pList.at(i));
-    }
-
-    if(players.at(0)->isPlayerSide(Participant::ParticipantSideEnum::NONE)&&
-       players.at(1)->isPlayerSide(Participant::ParticipantSideEnum::NONE)){ // Player vs player case
-
-        int randomNumber = QRandomGenerator::global()->bounded(1, 101);
-
-        Participant::ParticipantSideEnum fPlayerSide =
-            randomNumber > 50? Participant::ParticipantSideEnum::DARK:
-                                Participant::ParticipantSideEnum::LIGHT;
-
-        Participant::ParticipantSideEnum sPlayerSide =
-            fPlayerSide == Participant::ParticipantSideEnum::DARK?
-                Participant::ParticipantSideEnum::LIGHT:
-                Participant::ParticipantSideEnum::DARK;
-
-        players.at(0)->setPSide(fPlayerSide);
-        players.at(1)->setPSide(sPlayerSide);
-    } else {
-        Participant::ParticipantSideEnum fPlayerSide = players.at(0)->getPSide();
-        Participant::ParticipantSideEnum sPlayerSide = players.at(1)->getPSide();
-
-        if(fPlayerSide == Participant::ParticipantSideEnum::NONE){
-            Participant::ParticipantSideEnum newFPlayerSide =
-                sPlayerSide == Participant::ParticipantSideEnum::DARK?
-                    Participant::ParticipantSideEnum::LIGHT:
-                    Participant::ParticipantSideEnum::DARK;
-
-            players.at(0)->setPSide(newFPlayerSide);
-
-        } else if(sPlayerSide == Participant::ParticipantSideEnum::NONE) {
-
-            Participant::ParticipantSideEnum newSPlayerSide =
-                fPlayerSide == Participant::ParticipantSideEnum::DARK?
-                    Participant::ParticipantSideEnum::LIGHT:
-                    Participant::ParticipantSideEnum::DARK;
-
-            players.at(0)->setPSide(newSPlayerSide);
-        } else {
-            qDebug() << "Something went wrong while adding players to room";
-        }
-    }
     emit gameStarted();
 }
 
