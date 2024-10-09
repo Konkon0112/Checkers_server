@@ -103,7 +103,15 @@ void HumanParticipant::undoApprovedSlot()
 
 void HumanParticipant::gameOverSlot(Participant::ParticipantSideEnum winner)
 {
+    QString packetType = ptKeeper->enumToStringPacketType(PacketTypeKeeperService::PacketTypeEnum::GAME_OVER);
+    QString winner = ptKeeper->enumToStringPieceColor(winner);
 
+    QByteArray message;
+    message.append(packetType.toUtf8());
+    message.append(ptKeeper->getPacketSeparator());
+    message.append(winner.toUtf8());
+
+    sendMessage(message);
 }
 
 void HumanParticipant::turnChangedSlot(Participant::ParticipantSideEnum nextOnTurn)

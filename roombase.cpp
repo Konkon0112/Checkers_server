@@ -8,8 +8,14 @@ RoomBase::RoomBase(RoomState rs, QObject *parent)
 {
     roomState = rs;
     gameModel = new GameModel(this);
-    connect(gameModel, SIGNAL(stepHappenedSignal(QString)), this, SLOT(stepHappenedSlot(QString)));
-    connect(gameModel, SIGNAL(turnChangedSignal(Participant::ParticipantSideEnum)), this, SLOT(turnChangedSlot(Participant::ParticipantSideEnum)));
+    connect(gameModel, SIGNAL(stepHappenedSignal(QString)),
+            this, SLOT(stepHappenedSlot(QString)));
+
+    connect(gameModel, SIGNAL(turnChangedSignal(Participant::ParticipantSideEnum)),
+            this, SLOT(turnChangedSlot(Participant::ParticipantSideEnum)));
+
+    connect(gameModel, SIGNAL(gameOverSignal(Participant::ParticipantSideEnum)),
+            this, SLOT(gameOverSlot(Participant::ParticipantSideEnum)));
 }
 
 void RoomBase::join(QTcpSocket *socket)
@@ -161,5 +167,10 @@ void RoomBase::stepHappenedSlot(QString step)
 void RoomBase::turnChangedSlot(Participant::ParticipantSideEnum nextOnTurn)
 {
     emit turnChangedSignal(nextOnTurn);
+}
+
+void RoomBase::gameOverSlot(Participant::ParticipantSideEnum winner)
+{
+    emit gameOverSignal(winner);
 }
 
