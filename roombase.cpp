@@ -135,20 +135,6 @@ void RoomBase::stepInitiatedSlot(QString step)
     gameModel->passStepForward(step);
 }
 
-void RoomBase::playerQuitSlot()
-{
-    QObject* signalSender = sender();
-    HumanParticipant* participant = qobject_cast<HumanParticipant*>(signalSender);
-
-    emit playerQuitGameSignal(participant->getSocket());
-
-    pList.removeAll(participant);
-    qInfo() << participant << "left the game";
-
-    delete participant;
-
-}
-
 void RoomBase::undoInitiatedSlot()
 {
 
