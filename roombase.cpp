@@ -137,12 +137,32 @@ void RoomBase::stepInitiatedSlot(QString step)
 
 void RoomBase::undoInitiatedSlot()
 {
+    if(undoInitiatedBy != Participant::ParticipantSideEnum::NONE) return;
 
+    QObject* signalSender = sender();
+    Participant* participant = qobject_cast<Participant*>(signalSender);
+    Participant::ParticipantSideEnum pS = participant->getPSide();
+
+    Participant::ParticipantSideEnum approvingSide =
+        pS == Participant::ParticipantSideEnum::DARK?
+            Participant::ParticipantSideEnum::LIGHT : Participant::ParticipantSideEnum::DARK;
+
+    emit undoNeedsApproval(approvingSide);
 }
 
 void RoomBase::approveUndoSlot()
 {
+    QObject* signalSender = sender();
+    Participant* participant = qobject_cast<Participant*>(signalSender);
 
+    Participant::ParticipantSideEnum approvingSide =
+        undoInitiatedBy == Participant::ParticipantSideEnum::DARK?
+            Participant::ParticipantSideEnum::LIGHT : Participant::ParticipantSideEnum::DARK;
+
+    if(participant->getPSide() != approvingSide) return;
+    gameModel->undoStep(undoInitiatedBy);
+
+    emit undoApprovedSignal();
 }
 
 void RoomBase::stepHappenedSlot(QString step)

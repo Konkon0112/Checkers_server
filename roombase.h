@@ -40,7 +40,8 @@ protected:
     RoomType roomType;
     QList<Participant*> pList;
     RoomState roomState;
-    GameModel* gameModel;    
+    GameModel* gameModel;
+    Participant::ParticipantSideEnum undoInitiatedBy = Participant::ParticipantSideEnum::NONE;
 private:
 
 protected slots:
@@ -58,6 +59,7 @@ signals:
     void playerQuitGameSignal(QTcpSocket* socket); // Room sends to server for it to reconnect to readyRead
     void gameStartedSignal(Participant::ParticipantSideEnum colorOnTurn, QString stepsSoFar); // Sent to all participant
     void undoApprovedSignal(); //
+    void undoNeedsApproval(Participant::ParticipantSideEnum approvingSide);
     void stepHappenedSignal(QString step); // Sent to players
     void gameOverSignal(Participant::ParticipantSideEnum winner); // Sent to players
     void turnChangedSignal(Participant::ParticipantSideEnum nextOnTurn); // Sent to players

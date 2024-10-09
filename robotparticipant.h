@@ -19,6 +19,7 @@ public slots:
     void stepHappenedSlot(QString step) override;
     void turnChangedSlot(Participant::ParticipantSideEnum nextOnTurn) override;
     void undoApprovedSlot() override;
+    void undoNeedsApprovalSlot(Participant::ParticipantSideEnum approvingSideColor) override;
 
 protected slots:
     void gameStartedSlot(Participant::ParticipantSideEnum nextOnTurn, QString stepsSoFar) override;

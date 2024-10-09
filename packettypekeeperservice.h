@@ -23,6 +23,7 @@ public:
         TURN_CHANGED,
         UNDO_STEP_INITIATED,
         UNDO_STEP_APPROVED,
+        REJECT_UNDO,
         APPROVE_UNDO,
         UNKNOWN, // Need this in case some unknown string gets send from client
     };

@@ -24,6 +24,12 @@ void RobotParticipant::undoApprovedSlot()
 
 }
 
+void RobotParticipant::undoNeedsApprovalSlot(Participant::ParticipantSideEnum approvingSideColor)
+{
+    if(pSide != approvingSideColor) return;
+    emit approveUndoSignal();
+}
+
 void RobotParticipant::turnChangedSlot(Participant::ParticipantSideEnum nextOnTurn)
 {
 

@@ -23,12 +23,16 @@ void HumanParticipant::handleIncommingPacket(QString packetStr)
         qInfo() << socket << "INITIATE STEP";
         QStringList seperatedPacket = packetStr.split(ptKeeper->getPacketSeparator());
         emit stepInitiatedSignal(seperatedPacket[1]);
+
     } else if (packetType ==
                ptKeeper->enumToStringPacketType(PacketTypeKeeperService::PacketTypeEnum::UNDO_STEP_INITIATED)) {
         qInfo() << socket << "INITIATE UNDO";
+        emit undoInitiatedSignal();
+
     } else if (packetType ==
                ptKeeper->enumToStringPacketType(PacketTypeKeeperService::PacketTypeEnum::APPROVE_UNDO)) {
         qInfo() << socket << "APPROVE UNDO";
+
     } else if (packetType ==
                ptKeeper->enumToStringPacketType(PacketTypeKeeperService::PacketTypeEnum::QUIT_GAME)) {
         qInfo() << socket << "QUIT GAME";
@@ -99,6 +103,17 @@ void HumanParticipant::stepHappenedSlot(QString step)
 void HumanParticipant::undoApprovedSlot()
 {
 
+}
+
+void HumanParticipant::undoNeedsApprovalSlot(Participant::ParticipantSideEnum approvingSideColor)
+{
+    if(pSide != approvingSideColor) return;
+    QString packetType = ptKeeper->enumToStringPacketType(PacketTypeKeeperService::PacketTypeEnum::UNDO_STEP_INITIATED);
+
+    QByteArray message;
+    message.append(packetType.toUtf8());
+
+    sendMessage(message);
 }
 
 void HumanParticipant::gameOverSlot(Participant::ParticipantSideEnum winner)

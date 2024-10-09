@@ -33,6 +33,7 @@ signals:
 public slots:
     void stepHappenedSlot(QString step) override;
     void undoApprovedSlot() override;
+    void undoNeedsApprovalSlot(Participant::ParticipantSideEnum approvingSideColor) override;
     void gameStartedSlot(Participant::ParticipantSideEnum nextOnTurn, QString stepsSoFar) override;
     void gameOverSlot(Participant::ParticipantSideEnum winner);
     void turnChangedSlot(Participant::ParticipantSideEnum nextOnTurn) override;

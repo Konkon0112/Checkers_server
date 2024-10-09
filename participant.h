@@ -52,6 +52,8 @@ public slots:
 
     virtual void stepHappenedSlot(QString step) = 0;
 
+    virtual void undoNeedsApprovalSlot(Participant::ParticipantSideEnum approvingSideColor) = 0;
+
     virtual void undoApprovedSlot() = 0;
 
     virtual void turnChangedSlot(Participant::ParticipantSideEnum nextOnTurn) = 0;
