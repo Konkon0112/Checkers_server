@@ -13,6 +13,9 @@ class HumanVsHumanRoom : public RoomBase
 public:
     explicit HumanVsHumanRoom(QObject *parent = nullptr);
 
+protected slots:
+    void playerQuitSlot() override;
+
 private:
     QRandomGenerator rg = QRandomGenerator::securelySeeded();
 signals:

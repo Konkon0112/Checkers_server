@@ -14,6 +14,10 @@ public:
     explicit HumanVsRobotRoom(Participant::ParticipantSideEnum robotS, QObject *parent = nullptr);
 
     void setUpContinuedGame(Participant::ParticipantSideEnum playerOnTurn, QString stepStr);
+
+protected slots:
+    void playerQuitSlot() override;
+
 private:
 signals:
 };

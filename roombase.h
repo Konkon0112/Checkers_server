@@ -32,32 +32,34 @@ public:
 
     RoomType getRoomType() const;
 
-    bool thereIsPlayerWithSocket(QTcpSocket* socket);
+    void dealWithDisconnectedParticipant(QTcpSocket* socket);
 
 protected:
+    int countPlayersInRoom();
+
     RoomType roomType;
     QList<Participant*> pList;
     RoomState roomState;
-    GameModel* gameModel;
-
+    GameModel* gameModel;    
 private:
-    int countPlayersInRoom();
+
+protected slots:
+    virtual void playerQuitSlot() = 0;  // Received from player
 
 private slots:
     void stepInitiatedSlot(QString step);
-    void playerQuitSlot();
     void undoInitiatedSlot();
     void approveUndoSlot();
     void stepHappenedSlot(QString step); // Received from game model
     void turnChangedSlot(Participant::ParticipantSideEnum nextOnTurn);
 
 signals:
-    void playerQuitGameSignal(QTcpSocket* socket);
-    void gameStartedSignal(Participant::ParticipantSideEnum colorOnTurn, QString stepsSoFar);
-    void undoApprovedSignal();
+    void playerQuitGameSignal(QTcpSocket* socket); // Room sends to server for it to reconnect to readyRead
+    void gameStartedSignal(Participant::ParticipantSideEnum colorOnTurn, QString stepsSoFar); // Sent to all participant
+    void undoApprovedSignal(); //
     void stepHappenedSignal(QString step); // Sent to players
-    void gameOver(Participant::ParticipantSideEnum winner);
-    void turnChangedSignal(Participant::ParticipantSideEnum nextOnTurn);
+    void gameOverSignal(Participant::ParticipantSideEnum winner); // Sent to players
+    void turnChangedSignal(Participant::ParticipantSideEnum nextOnTurn); // Sent to players
 };
 
 #endif // ROOMBASE_H

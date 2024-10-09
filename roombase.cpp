@@ -58,12 +58,14 @@ void RoomBase::join(QTcpSocket *socket)
     // - undo approved
     connect(this, SIGNAL(undoApprovedSignal()), hP, SLOT(undoApprovedSlot()));
     // - game over
-    connect(this, SIGNAL(gameOver(Participant::ParticipantSideEnum)), hP, SLOT(gameOverSlot(Participant::ParticipantSideEnum)));
+    connect(this, SIGNAL(gameOverSignal(Participant::ParticipantSideEnum)), hP, SLOT(gameOverSlot(Participant::ParticipantSideEnum)));
     // - player quit
     connect(hP, SIGNAL(playerQuitSignal()), this, SLOT(playerQuitSlot()));
 
 
     this->pList.append(hP);
+
+    if(pNum == 1) roomState == RoomState::ACTIVE;
 
     if(pNum >= 1){
         emit gameStartedSignal(gameModel->getColorOnTurn(), gameModel->getJoinedStepStr());
@@ -80,12 +82,28 @@ RoomBase::RoomType RoomBase::getRoomType() const
     return roomType;
 }
 
-bool RoomBase::thereIsPlayerWithSocket(QTcpSocket *socket)
+void RoomBase::dealWithDisconnectedParticipant(QTcpSocket* socket)
 {
     for(int i = 0; i < pList.length(); i++){
-        if(pList.at(i)->usingThisSocket(socket)) return true;
+
+        if(pList.at(i)->usingThisSocket(socket)){
+            HumanParticipant* hP = qobject_cast<HumanParticipant*>(pList.at(i));
+            int pNum = countPlayersInRoom();
+
+            if(hP->getPType() == Participant::ParticipantTypeEnum::PLAYER && pNum == 2){
+                Participant::ParticipantSideEnum winner =
+                    hP->getPSide() == Participant::ParticipantSideEnum::DARK?
+                        Participant::ParticipantSideEnum::LIGHT : Participant::ParticipantSideEnum::DARK;
+                emit gameOverSignal(winner);
+                roomState == RoomBase::RoomState::FINISHED;
+            }
+
+            pList.removeAll(hP);
+            qInfo() << hP << "left the game";
+
+            delete hP;
+        }
     }
-    return false;
 }
 
 int RoomBase::countPlayersInRoom()

@@ -1,5 +1,6 @@
 #include "humanvsrobotroom.h"
 #include "robotparticipant.h"
+#include "humanparticipant.h"
 
 HumanVsRobotRoom::HumanVsRobotRoom(Participant::ParticipantSideEnum robotS, QObject *parent)
     : RoomBase{RoomBase::RoomState::ACTIVE, parent}
@@ -20,4 +21,22 @@ void HumanVsRobotRoom::setUpContinuedGame(Participant::ParticipantSideEnum playe
     for(int i = 0; i < steps.length(); i++){
         gameModel->passStepForward(steps.at(i));
     }
+}
+
+void HumanVsRobotRoom::playerQuitSlot()
+{
+    // This can only be received from human player here
+    QObject* signalSender = sender();
+    if(!signalSender) return;
+    HumanParticipant* participant = qobject_cast<HumanParticipant*>(signalSender);
+
+    disconnect(this, nullptr, participant, nullptr);
+    disconnect(participant, nullptr, this, nullptr);
+
+    emit playerQuitGameSignal(participant->getSocket());
+
+    pList.removeAll(participant);
+    qInfo() << participant << "left the game";
+
+    delete participant;
 }

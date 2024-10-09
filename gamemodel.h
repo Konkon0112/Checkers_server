@@ -29,6 +29,9 @@ signals:
     void gameOverSignal(Participant::ParticipantSideEnum winner);
 
 private:
+    void checkIfGameOver(Participant::ParticipantSideEnum playerOnTurnSide);
+    void completeTasksOnTurnChange(Participant::ParticipantSideEnum playerOnTurnSide);
+
     Participant::ParticipantSideEnum colorOnTurn;
     Board* board;
     QList<ValidatorBase*> validators;

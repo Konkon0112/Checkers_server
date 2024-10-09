@@ -42,11 +42,15 @@ void Server::disconnected()
     if(!socket)return;
     qInfo() << "Socket disconnected" << socket;
 
+    for(int i = 0; i < rList.length(); i++){
+        rList.at(i)->dealWithDisconnectedParticipant(socket);
+    }
+
     sList.removeAll(socket);
     disconnect(socket, SIGNAL(disconnected()),this,SLOT(disconnected()));
     disconnect(socket, SIGNAL(readyRead()), this, SLOT(readyRead()));
     socket->deleteLater();
-    //TODO: check if there is game related to player
+
 }
 
 void Server::readyRead()
@@ -69,7 +73,7 @@ void Server::readyRead()
 
 void Server::playerQuitGameSlot(QTcpSocket *socket)
 {
-    connect(socket, SIGNAL(readyRead()),this, SLOT(readyRead()));
+    //connect(socket, SIGNAL(readyRead()),this, SLOT(readyRead()));
 }
 
 void Server::incomingConnection(qintptr handle)

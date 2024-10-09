@@ -47,23 +47,20 @@ void GameModel::passStepForward(QString step)
                 if(step.contains('x')){
                     QSet<QString> possibleSteps = validators.at(i)->getValidIndecies(to, board->getActiveBoard());
                     if(possibleSteps.empty()){
-                        emit turnChangedSignal(newTurn);
-                        colorOnTurn = newTurn;
+                        completeTasksOnTurnChange(newTurn);
+                        return;
                     }
                     QString firstPos = *possibleSteps.begin();
 
                     // If a piece can hit, then it has to hit
                     // So if one contains '-' that means all of the steps are normal steps
                     if(firstPos.contains('-')){
-                        emit turnChangedSignal(newTurn);
-                        colorOnTurn = newTurn;
+                        completeTasksOnTurnChange(newTurn);
                     }
 
 
                 } else {
-                    emit turnChangedSignal(newTurn);
-                    colorOnTurn = newTurn;
-                    qInfo() << "Changing turn";
+                    completeTasksOnTurnChange(newTurn);
                 }
             }
             break;
@@ -89,4 +86,22 @@ QString GameModel::getJoinedStepStr()
 void GameModel::setColorOnTurn(Participant::ParticipantSideEnum newColorOnTurn)
 {
     colorOnTurn = newColorOnTurn;
+}
+
+void GameModel::checkIfGameOver(Participant::ParticipantSideEnum playerOnTurnSide)
+{
+
+    // TODO: Checking
+
+    Participant::ParticipantSideEnum winner =
+        playerOnTurnSide == Participant::ParticipantSideEnum::DARK?
+            Participant::ParticipantSideEnum::LIGHT: Participant::ParticipantSideEnum::DARK;
+    emit gameOverSignal(winner);
+}
+
+void GameModel::completeTasksOnTurnChange(Participant::ParticipantSideEnum playerOnTurnSide)
+{
+    emit turnChangedSignal(playerOnTurnSide);
+    colorOnTurn = playerOnTurnSide;
+    checkIfGameOver(playerOnTurnSide);
 }
