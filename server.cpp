@@ -73,7 +73,20 @@ void Server::readyRead()
 
 void Server::playerQuitGameSlot(QTcpSocket *socket)
 {
-    //connect(socket, SIGNAL(readyRead()),this, SLOT(readyRead()));
+    // When a player joins a room the reading responsibility goes to
+    // the associated participant object
+    connect(socket, SIGNAL(readyRead()),this, SLOT(readyRead()));
+}
+
+void Server::removeRoomFromListSlot()
+{
+    RoomBase *room = qobject_cast<RoomBase*>(sender());
+    if(!room) return;
+
+    disconnect(room, nullptr, this, nullptr);
+    disconnect(this, nullptr, room, nullptr);
+    rList.removeAll(room);
+    delete room;
 }
 
 void Server::incomingConnection(qintptr handle)
@@ -126,6 +139,7 @@ void Server::handleJoinNewSinglePlayer(QString data, QTcpSocket* socket)
 
     HumanVsRobotRoom* newRoom = new HumanVsRobotRoom(robotSideEnum, this);
     connect(newRoom, SIGNAL(playerQuitGameSignal(QTcpSocket*)), this, SLOT(playerQuitGameSlot(QTcpSocket*)));
+    connect(newRoom, SIGNAL(removeRoomFromListSignal()), this, SLOT(removeRoomFromListSlot()));
     newRoom->join(socket);
     rList.append(newRoom);
 }
@@ -143,6 +157,7 @@ void Server::handleContinueSinglePlayer(QString data, QTcpSocket* socket)
     newRoom->setUpContinuedGame(colorOnTurn, dataList[2]);
 
     connect(newRoom, SIGNAL(playerQuitGameSignal(QTcpSocket*)), this, SLOT(playerQuitGameSlot(QTcpSocket*)));
+    connect(newRoom, SIGNAL(removeRoomFromListSignal()), this, SLOT(removeRoomFromListSlot()));
     newRoom->join(socket);
     rList.append(newRoom);
 }
@@ -152,7 +167,8 @@ void Server::joinMultiPlayer(QString data, QTcpSocket* socket)
     // [packet type]
     HumanVsHumanRoom* newRoom = nullptr;
     for(int i = 0; i < rList.length(); i++){
-        if(rList.at(i)->getRoomType() == RoomBase::RoomType::HUMAN_VS_HUMAN){
+        if(rList.at(i)->getRoomType() == RoomBase::RoomType::HUMAN_VS_HUMAN &&
+            rList.at(i)->getRoomState() != RoomBase::RoomState::FINISHED){
             newRoom = qobject_cast<HumanVsHumanRoom*>(rList.at(i));
             break;
         }
@@ -162,5 +178,6 @@ void Server::joinMultiPlayer(QString data, QTcpSocket* socket)
         rList.append(newRoom);
     }
     connect(newRoom, SIGNAL(playerQuitGameSignal(QTcpSocket*)), this, SLOT(playerQuitGameSlot(QTcpSocket*)));
+    connect(newRoom, SIGNAL(removeRoomFromListSignal()), this, SLOT(removeRoomFromListSlot()));
     newRoom->join(socket);
 }

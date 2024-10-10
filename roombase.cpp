@@ -96,7 +96,9 @@ void RoomBase::dealWithDisconnectedParticipant(QTcpSocket* socket)
             HumanParticipant* hP = qobject_cast<HumanParticipant*>(pList.at(i));
             int pNum = countPlayersInRoom();
 
-            if(hP->getPType() == Participant::ParticipantTypeEnum::PLAYER && pNum == 2){
+            if(roomState == RoomBase::RoomState::ACTIVE &&
+                hP->getPType() == Participant::ParticipantTypeEnum::PLAYER && pNum == 2){
+                // If one of the player disconnects than the other one will be the winner.
                 Participant::ParticipantSideEnum winner =
                     hP->getPSide() == Participant::ParticipantSideEnum::DARK?
                         Participant::ParticipantSideEnum::LIGHT : Participant::ParticipantSideEnum::DARK;
@@ -105,7 +107,7 @@ void RoomBase::dealWithDisconnectedParticipant(QTcpSocket* socket)
             }
 
             pList.removeAll(hP);
-            qInfo() << hP << "left the game";
+            qInfo() << hP  << "left the game";
 
             delete hP;
         }
@@ -163,6 +165,23 @@ void RoomBase::approveUndoSlot()
     gameModel->undoStep(undoInitiatedBy);
 
     emit undoApprovedSignal();
+    undoInitiatedBy = Participant::ParticipantSideEnum::NONE;
+}
+
+void RoomBase::rejectUndoSlot()
+{
+    QObject* signalSender = sender();
+    Participant* participant = qobject_cast<Participant*>(signalSender);
+
+    Participant::ParticipantSideEnum approvingSide =
+        undoInitiatedBy == Participant::ParticipantSideEnum::DARK?
+            Participant::ParticipantSideEnum::LIGHT : Participant::ParticipantSideEnum::DARK;
+
+    if(participant->getPSide() != approvingSide) return;
+    gameModel->undoStep(undoInitiatedBy);
+
+    emit undoRejectedSignal();
+    undoInitiatedBy = Participant::ParticipantSideEnum::NONE;
 }
 
 void RoomBase::stepHappenedSlot(QString step)

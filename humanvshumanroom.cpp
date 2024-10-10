@@ -31,4 +31,7 @@ void HumanVsHumanRoom::playerQuitSlot()
     qInfo() << participant << "left the game";
 
     delete participant;
+
+    // Now 0
+    if(pNum == 1) emit removeRoomFromListSignal();
 }

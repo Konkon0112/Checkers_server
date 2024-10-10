@@ -39,4 +39,7 @@ void HumanVsRobotRoom::playerQuitSlot()
     qInfo() << participant << "left the game";
 
     delete participant;
+
+    roomState = RoomBase::RoomState::FINISHED;
+    emit removeRoomFromListSignal(); // Only player left is a robot
 }

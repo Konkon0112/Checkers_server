@@ -24,6 +24,7 @@ public slots:
 
 private slots:
     void playerQuitGameSlot(QTcpSocket* socket);
+    void removeRoomFromListSlot();
 
 protected:
     void incomingConnection(qintptr handle) override;

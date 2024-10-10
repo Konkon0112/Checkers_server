@@ -51,14 +51,17 @@ private slots:
     void stepInitiatedSlot(QString step);
     void undoInitiatedSlot();
     void approveUndoSlot();
+    void rejectUndoSlot();
     void stepHappenedSlot(QString step); // Received from game model
     void turnChangedSlot(Participant::ParticipantSideEnum nextOnTurn);
     void gameOverSlot(Participant::ParticipantSideEnum winner); // Received from game model
 
 signals:
+    void removeRoomFromListSignal();
     void playerQuitGameSignal(QTcpSocket* socket); // Room sends to server for it to reconnect to readyRead
     void gameStartedSignal(Participant::ParticipantSideEnum colorOnTurn, QString stepsSoFar); // Sent to all participant
     void undoApprovedSignal(); //
+    void undoRejectedSignal();
     void undoNeedsApproval(Participant::ParticipantSideEnum approvingSide);
     void stepHappenedSignal(QString step); // Sent to players
     void gameOverSignal(Participant::ParticipantSideEnum winner); // Sent to players
