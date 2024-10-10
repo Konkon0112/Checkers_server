@@ -79,7 +79,7 @@ void RoomBase::join(QTcpSocket *socket)
     this->pList.append(hP);
 
     if(pNum == 1){
-        roomState == RoomState::ACTIVE;
+        roomState = RoomState::ACTIVE;
         gameModel->restartGame();
     }
 
@@ -120,6 +120,7 @@ void RoomBase::dealWithDisconnectedParticipant(QTcpSocket* socket)
             qInfo() << hP  << "left the game";
 
             delete hP;
+            if(pNum == 1) emit removeRoomFromListSignal();
         }
     }
 }
