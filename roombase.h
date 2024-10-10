@@ -50,6 +50,7 @@ protected slots:
 private slots:
     void stepInitiatedSlot(QString step);
     void undoInitiatedSlot();
+    void undoHappenedSlot(QString newStepsSoFar); // Received from gameModel
     void approveUndoSlot();
     void rejectUndoSlot();
     void stepHappenedSlot(QString step); // Received from game model
@@ -60,6 +61,7 @@ signals:
     void removeRoomFromListSignal();
     void playerQuitGameSignal(QTcpSocket* socket); // Room sends to server for it to reconnect to readyRead
     void gameStartedSignal(Participant::ParticipantSideEnum colorOnTurn, QString stepsSoFar); // Sent to all participant
+    void undoHappenedSignal(QString newStepsSoFar);
     void undoApprovedSignal(); //
     void undoRejectedSignal();
     void undoNeedsApproval(Participant::ParticipantSideEnum approvingSide);

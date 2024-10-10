@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QList>
+#include <QPair>
 #include <QStringList>
 
 #include "board.h"
@@ -16,26 +17,36 @@ class GameModel : public QObject
 public:
     explicit GameModel(QObject *parent = nullptr);
 
-    void resetGame();
+    enum class GameState {
+        UNDER_STEUP,
+        ACTIVE,
+        FINISHED,
+    };
+
+    void restartGame();
     void passStepForward(QString step);
     void undoStep(Participant::ParticipantSideEnum playerWhoInitiated);
     Participant::ParticipantSideEnum getColorOnTurn() const;
     QString getJoinedStepStr();
     void setColorOnTurn(Participant::ParticipantSideEnum newColorOnTurn);
+    void setUpContinuedGame(QString stepsSoFar);
 
 signals:
     void stepHappenedSignal(QString step);
     void turnChangedSignal(Participant::ParticipantSideEnum newTurnColor);
     void gameOverSignal(Participant::ParticipantSideEnum winner);
+    void undoHappenedSignal(QString newStepsSoFar);
 
 private:
-    void checkIfGameOver(Participant::ParticipantSideEnum playerOnTurnSide);
+    bool checkIfGameOver(Participant::ParticipantSideEnum playerOnTurnSide);
     void completeTasksOnTurnChange(Participant::ParticipantSideEnum playerOnTurnSide);
+    void addStepToList(QString step);
 
+    GameState state;
     Participant::ParticipantSideEnum colorOnTurn;
     Board* board;
     QList<ValidatorBase*> validators;
-    QStringList stepList;
+    QList<QPair<Participant::ParticipantSideEnum, QStringList>> stepList;
 };
 
 #endif // GAMEMODEL_H

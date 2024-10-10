@@ -19,15 +19,15 @@ void RobotParticipant::stepHappenedSlot(QString step)
 
 }
 
-void RobotParticipant::undoApprovedSlot()
-{
-
-}
-
 void RobotParticipant::undoNeedsApprovalSlot(Participant::ParticipantSideEnum approvingSideColor)
 {
     if(pSide != approvingSideColor) return;
     emit approveUndoSignal();
+}
+
+void RobotParticipant::undoHappenedSlot(QString newStepsSoFar)
+{
+
 }
 
 void RobotParticipant::turnChangedSlot(Participant::ParticipantSideEnum nextOnTurn)

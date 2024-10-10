@@ -32,6 +32,12 @@ void HumanParticipant::handleIncommingPacket(QString packetStr)
     } else if (packetType ==
                ptKeeper->enumToStringPacketType(PacketTypeKeeperService::PacketTypeEnum::APPROVE_UNDO)) {
         qInfo() << socket << "APPROVE UNDO";
+        emit approveUndoSignal();
+
+    } else if (packetType ==
+               ptKeeper->enumToStringPacketType(PacketTypeKeeperService::PacketTypeEnum::REJECT_UNDO)) {
+        qInfo() << socket << "REJECT UNDO";
+        emit rejectUndoSignal();
 
     } else if (packetType ==
                ptKeeper->enumToStringPacketType(PacketTypeKeeperService::PacketTypeEnum::QUIT_GAME)) {
@@ -100,11 +106,6 @@ void HumanParticipant::stepHappenedSlot(QString step)
     sendMessage(message);
 }
 
-void HumanParticipant::undoApprovedSlot()
-{
-
-}
-
 void HumanParticipant::undoNeedsApprovalSlot(Participant::ParticipantSideEnum approvingSideColor)
 {
     if(pSide != approvingSideColor) return;
@@ -112,6 +113,18 @@ void HumanParticipant::undoNeedsApprovalSlot(Participant::ParticipantSideEnum ap
 
     QByteArray message;
     message.append(packetType.toUtf8());
+
+    sendMessage(message);
+}
+
+void HumanParticipant::undoHappenedSlot(QString newStepsSoFar)
+{
+    QString packetType = ptKeeper->enumToStringPacketType(PacketTypeKeeperService::PacketTypeEnum::UNDO_STEP_APPROVED);
+
+    QByteArray message;
+    message.append(packetType.toUtf8());
+    message.append(ptKeeper->getPacketSeparator());
+    message.append(newStepsSoFar.toUtf8());
 
     sendMessage(message);
 }

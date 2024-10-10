@@ -10,16 +10,19 @@ GameModel::GameModel(QObject *parent)
 
     validators.append(new ValidatorPawn(this));
     validators.append(new ValidatorDame(this));
+    state = GameState::UNDER_STEUP;
 }
 
-void GameModel::resetGame()
+void GameModel::restartGame()
 {
     board->restartBoard();
     colorOnTurn = Participant::ParticipantSideEnum::LIGHT;
+    state = GameState::ACTIVE;
 }
 
 void GameModel::passStepForward(QString step)
 {
+    if(state == GameState::FINISHED) return;
     QStringList stepDissasembled = step.split('-');
     if(stepDissasembled.length() == 1){
         stepDissasembled = step.split('x');
@@ -36,13 +39,15 @@ void GameModel::passStepForward(QString step)
         if(validators.at(i)->isValidatorsResponsibility(board->charAtIndex(from))){
             if(validators.at(i)->isValidStep(step, board->getActiveBoard())){
                 board->executeStep(step);
-                stepList.append(step);
-                emit stepHappenedSignal(step);
+                addStepToList(step);
+                if(state == GameState::ACTIVE) emit stepHappenedSignal(step);
                 // check for turn change
-
                 Participant::ParticipantSideEnum newTurn =
                     colorOnTurn == Participant::ParticipantSideEnum::DARK?
                         Participant::ParticipantSideEnum::LIGHT: Participant::ParticipantSideEnum::DARK;
+
+                bool isGameOver = checkIfGameOver(newTurn);
+                if(isGameOver) return;
 
                 if(step.contains('x')){
                     QSet<QString> possibleSteps = validators.at(i)->getValidIndecies(to, board->getActiveBoard());
@@ -70,7 +75,26 @@ void GameModel::passStepForward(QString step)
 
 void GameModel::undoStep(Participant::ParticipantSideEnum playerWhoInitiated)
 {
+    if(stepList.length() == 0) return;
 
+    int indOfLastStepSequence = -1;
+
+    for(int i = stepList.length(); i >= 0; i--){
+        if(stepList.at(i).first == playerWhoInitiated){
+            indOfLastStepSequence = i;
+            break;
+        }
+    }
+
+    if(indOfLastStepSequence == -1) return;
+
+    stepList = stepList.sliced(0, indOfLastStepSequence + 1);
+
+    restartGame();
+    setUpContinuedGame(getJoinedStepStr());
+
+    emit undoHappenedSignal(getJoinedStepStr());
+    emit turnChangedSignal(playerWhoInitiated);
 }
 
 Participant::ParticipantSideEnum GameModel::getColorOnTurn() const
@@ -80,7 +104,11 @@ Participant::ParticipantSideEnum GameModel::getColorOnTurn() const
 
 QString GameModel::getJoinedStepStr()
 {
-    return stepList.join(';');
+    QStringList res;
+    for(int i = 0; i < stepList.length(); i++){
+        res.append(stepList.at(i).second.join(';'));
+    }
+    return res.join(';');
 }
 
 void GameModel::setColorOnTurn(Participant::ParticipantSideEnum newColorOnTurn)
@@ -88,20 +116,72 @@ void GameModel::setColorOnTurn(Participant::ParticipantSideEnum newColorOnTurn)
     colorOnTurn = newColorOnTurn;
 }
 
-void GameModel::checkIfGameOver(Participant::ParticipantSideEnum playerOnTurnSide)
+void GameModel::setUpContinuedGame(QString stepsSoFar)
 {
+    state = GameState::UNDER_STEUP;
+    QStringList stepsHappened = stepsSoFar.split(';');
+    for(int i = 0; i < stepsHappened.length(); i++){
+        passStepForward(stepsHappened.at(i));
+    }
+    state = GameState::ACTIVE;
+}
 
-    // TODO: Checking
+bool GameModel::checkIfGameOver(Participant::ParticipantSideEnum playerOnTurnSide)
+{
+    QString activeBoard = board->getActiveBoard();
+    for(int i = 0; i < activeBoard.length(); i++){
+        ValidatorBase* v = nullptr;
+        for(int j = 0; j < validators.size(); j++){
+            if(validators.at(j)->isValidatorsResponsibility(board->charAtIndex(i))) v = validators.at(j);
+        }
+        if(v == nullptr) continue;
+        if(playerOnTurnSide == Participant::ParticipantSideEnum::DARK &&
+                activeBoard.at(i).isLower()){
+            QSet<QString> possibleSteps = v->getValidIndecies(i, activeBoard);
+            if(!possibleSteps.isEmpty()) return false;
+
+        } else if(playerOnTurnSide == Participant::ParticipantSideEnum::LIGHT &&
+                   activeBoard.at(i).isUpper()){
+            QSet<QString> possibleSteps = v->getValidIndecies(i, activeBoard);
+            if(!possibleSteps.isEmpty()) return false;
+        }
+    }
 
     Participant::ParticipantSideEnum winner =
         playerOnTurnSide == Participant::ParticipantSideEnum::DARK?
             Participant::ParticipantSideEnum::LIGHT: Participant::ParticipantSideEnum::DARK;
-    emit gameOverSignal(winner);
+
+    if(state == GameState::ACTIVE) emit gameOverSignal(winner);
+
+    state = GameState::FINISHED;
+    return true;
 }
 
 void GameModel::completeTasksOnTurnChange(Participant::ParticipantSideEnum playerOnTurnSide)
 {
-    emit turnChangedSignal(playerOnTurnSide);
+    if(state == GameState::ACTIVE) emit turnChangedSignal(playerOnTurnSide);
     colorOnTurn = playerOnTurnSide;
-    checkIfGameOver(playerOnTurnSide);
+}
+
+void GameModel::addStepToList(QString step)
+{
+    if(stepList.isEmpty()) {
+        QStringList steps;
+        steps.append(step);
+        QPair<Participant::ParticipantSideEnum, QStringList> pair(colorOnTurn, steps);
+        stepList.append(pair);
+
+    } else {
+        QPair<Participant::ParticipantSideEnum, QStringList> lastStepItem = stepList.last();
+        if(lastStepItem.first == colorOnTurn) {
+            lastStepItem.second.append(step);
+
+        } else {
+            QStringList steps;
+            steps.append(step);
+            QPair<Participant::ParticipantSideEnum, QStringList> pair(colorOnTurn, steps);
+            stepList.append(pair);
+
+        }
+    }
 }

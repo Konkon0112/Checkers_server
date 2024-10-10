@@ -14,6 +14,9 @@ RoomBase::RoomBase(RoomState rs, QObject *parent)
     connect(gameModel, SIGNAL(turnChangedSignal(Participant::ParticipantSideEnum)),
             this, SLOT(turnChangedSlot(Participant::ParticipantSideEnum)));
 
+    connect(gameModel, SIGNAL(undoHappenedSignal(QString)),
+            this, SLOT(undoHappenedSlot(QString)));
+
     connect(gameModel, SIGNAL(gameOverSignal(Participant::ParticipantSideEnum)),
             this, SLOT(gameOverSlot(Participant::ParticipantSideEnum)));
 }
@@ -48,7 +51,8 @@ void RoomBase::join(QTcpSocket *socket)
 
     //TODO: connect signals between room and participant
     // - start game
-    connect(this, SIGNAL(gameStartedSignal(Participant::ParticipantSideEnum, QString)), hP, SLOT(gameStartedSlot(Participant::ParticipantSideEnum, QString)));
+    connect(this, SIGNAL(gameStartedSignal(Participant::ParticipantSideEnum, QString)),
+            hP, SLOT(gameStartedSlot(Participant::ParticipantSideEnum, QString)));
     // - initiate step
     connect(hP, SIGNAL(stepInitiatedSignal(QString)), this, SLOT(stepInitiatedSlot(QString)));
     // - step happened
@@ -59,10 +63,14 @@ void RoomBase::join(QTcpSocket *socket)
     connect(this, SIGNAL(turnChangedSignal(Participant::ParticipantSideEnum)), hP, SLOT(turnChangedSlot(Participant::ParticipantSideEnum)));
     // - initiate undo
     connect(hP, SIGNAL(undoInitiatedSignal()), this, SLOT(undoInitiatedSlot()));
+    // - undo needs approval
+    connect(this, SIGNAL(undoNeedsApproval(Participant::ParticipantSideEnum)), hP, SLOT(undoNeedsApprovalSlot(Participant::ParticipantSideEnum)));
     // - approve undo
     connect(hP, SIGNAL(approveUndoSignal()), this, SLOT(approveUndoSlot()));
-    // - undo approved
-    connect(this, SIGNAL(undoApprovedSignal()), hP, SLOT(undoApprovedSlot()));
+    // - reject undo
+    connect(hP, SIGNAL(rejectUndoSignal()), this, SLOT(rejectUndoSlot()));
+    // - undo happened
+    connect(this, SIGNAL(undoHappenedSignal(QString)), hP, SLOT(undoHappenedSlot(QString)));
     // - game over
     connect(this, SIGNAL(gameOverSignal(Participant::ParticipantSideEnum)), hP, SLOT(gameOverSlot(Participant::ParticipantSideEnum)));
     // - player quit
@@ -129,7 +137,6 @@ void RoomBase::stepInitiatedSlot(QString step)
 {
     // Check if right player
     //  - player on turn
-    //  - player color and piece color match
     QObject* signalSender = sender();
     Participant* participant = qobject_cast<Participant*>(signalSender);
     if(!participant->isPlayerSide(gameModel->getColorOnTurn())) return;
@@ -150,6 +157,11 @@ void RoomBase::undoInitiatedSlot()
             Participant::ParticipantSideEnum::LIGHT : Participant::ParticipantSideEnum::DARK;
 
     emit undoNeedsApproval(approvingSide);
+}
+
+void RoomBase::undoHappenedSlot(QString newStepsSoFar)
+{
+    emit undoHappenedSignal(newStepsSoFar);
 }
 
 void RoomBase::approveUndoSlot()
