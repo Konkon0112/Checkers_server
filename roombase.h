@@ -63,7 +63,6 @@ signals:
     void gameStartedSignal(Participant::ParticipantSideEnum colorOnTurn, QString stepsSoFar); // Sent to all participant
     void undoHappenedSignal(QString newStepsSoFar);
     void undoApprovedSignal(); //
-    void undoRejectedSignal();
     void undoNeedsApproval(Participant::ParticipantSideEnum approvingSide);
     void stepHappenedSignal(QString step); // Sent to players
     void gameOverSignal(Participant::ParticipantSideEnum winner); // Sent to players

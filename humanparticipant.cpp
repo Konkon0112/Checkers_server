@@ -17,6 +17,7 @@ HumanParticipant::~HumanParticipant()
 
 void HumanParticipant::handleIncommingPacket(QString packetStr)
 {
+    qInfo() << "packet content:" << packetStr;
     QString packetType = ptKeeper->shouldParticipantHandle(packetStr);
     if(packetType ==
         ptKeeper->enumToStringPacketType(PacketTypeKeeperService::PacketTypeEnum::INITIATE_STEP)){

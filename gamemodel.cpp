@@ -15,7 +15,6 @@ GameModel::GameModel(QObject *parent)
 
 void GameModel::restartGame()
 {
-    board->restartBoard();
     colorOnTurn = Participant::ParticipantSideEnum::LIGHT;
     state = GameState::ACTIVE;
 }
@@ -79,7 +78,7 @@ void GameModel::undoStep(Participant::ParticipantSideEnum playerWhoInitiated)
 
     int indOfLastStepSequence = -1;
 
-    for(int i = stepList.length(); i >= 0; i--){
+    for(int i = stepList.length() - 1; i >= 0; i--){
         if(stepList.at(i).first == playerWhoInitiated){
             indOfLastStepSequence = i;
             break;
@@ -88,13 +87,14 @@ void GameModel::undoStep(Participant::ParticipantSideEnum playerWhoInitiated)
 
     if(indOfLastStepSequence == -1) return;
 
-    stepList = stepList.sliced(0, indOfLastStepSequence + 1);
+    stepList = stepList.sliced(0, indOfLastStepSequence);
 
     restartGame();
     setUpContinuedGame(getJoinedStepStr());
 
     emit undoHappenedSignal(getJoinedStepStr());
-    emit turnChangedSignal(playerWhoInitiated);
+
+    setColorOnTurn(playerWhoInitiated);
 }
 
 Participant::ParticipantSideEnum GameModel::getColorOnTurn() const
@@ -114,6 +114,7 @@ QString GameModel::getJoinedStepStr()
 void GameModel::setColorOnTurn(Participant::ParticipantSideEnum newColorOnTurn)
 {
     colorOnTurn = newColorOnTurn;
+    emit turnChangedSignal(newColorOnTurn);
 }
 
 void GameModel::setUpContinuedGame(QString stepsSoFar)
@@ -159,8 +160,8 @@ bool GameModel::checkIfGameOver(Participant::ParticipantSideEnum playerOnTurnSid
 
 void GameModel::completeTasksOnTurnChange(Participant::ParticipantSideEnum playerOnTurnSide)
 {
-    if(state == GameState::ACTIVE) emit turnChangedSignal(playerOnTurnSide);
     colorOnTurn = playerOnTurnSide;
+    if(state == GameState::ACTIVE) emit turnChangedSignal(playerOnTurnSide);
 }
 
 void GameModel::addStepToList(QString step)

@@ -51,8 +51,7 @@ void RoomBase::join(QTcpSocket *socket)
 
     //TODO: connect signals between room and participant
     // - start game
-    connect(this, SIGNAL(gameStartedSignal(Participant::ParticipantSideEnum, QString)),
-            hP, SLOT(gameStartedSlot(Participant::ParticipantSideEnum, QString)));
+    connect(this, SIGNAL(gameStartedSignal(Participant::ParticipantSideEnum, QString)), hP, SLOT(gameStartedSlot(Participant::ParticipantSideEnum, QString)));
     // - initiate step
     connect(hP, SIGNAL(stepInitiatedSignal(QString)), this, SLOT(stepInitiatedSlot(QString)));
     // - step happened
@@ -79,7 +78,10 @@ void RoomBase::join(QTcpSocket *socket)
 
     this->pList.append(hP);
 
-    if(pNum == 1) roomState == RoomState::ACTIVE;
+    if(pNum == 1){
+        roomState == RoomState::ACTIVE;
+        gameModel->restartGame();
+    }
 
     if(pNum >= 1){
         emit gameStartedSignal(gameModel->getColorOnTurn(), gameModel->getJoinedStepStr());
@@ -156,6 +158,7 @@ void RoomBase::undoInitiatedSlot()
         pS == Participant::ParticipantSideEnum::DARK?
             Participant::ParticipantSideEnum::LIGHT : Participant::ParticipantSideEnum::DARK;
 
+    undoInitiatedBy = pS;
     emit undoNeedsApproval(approvingSide);
 }
 
@@ -190,9 +193,7 @@ void RoomBase::rejectUndoSlot()
             Participant::ParticipantSideEnum::LIGHT : Participant::ParticipantSideEnum::DARK;
 
     if(participant->getPSide() != approvingSide) return;
-    gameModel->undoStep(undoInitiatedBy);
 
-    emit undoRejectedSignal();
     undoInitiatedBy = Participant::ParticipantSideEnum::NONE;
 }
 
