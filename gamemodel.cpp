@@ -11,6 +11,8 @@ GameModel::GameModel(QObject *parent)
     validators.append(new ValidatorPawn(this));
     validators.append(new ValidatorDame(this));
     state = GameState::UNDER_STEUP;
+
+    useablePieceFinder = new UseablePieceFinder(this);
 }
 
 void GameModel::restartGame()
@@ -36,7 +38,11 @@ void GameModel::passStepForward(QString step)
 
     for(int i = 0; i < validators.size(); i++){
         if(validators.at(i)->isValidatorsResponsibility(board->charAtIndex(from))){
-            if(validators.at(i)->isValidStep(step, board->getActiveBoard())){
+            QStringList stepDissasembled = step.split('x');
+
+            if(useablePieces.contains(stepDissasembled[0].toInt()) &&
+                validators.at(i)->isValidStep(step, board->getActiveBoard())){
+
                 board->executeStep(step);
                 addStepToList(step);
                 if(state == GameState::ACTIVE) emit stepHappenedSignal(step);
@@ -56,10 +62,13 @@ void GameModel::passStepForward(QString step)
                     }
                     QString firstPos = *possibleSteps.begin();
 
-                    // If a piece can hit, then it has to hit
+                    // If a piece can capture, then it has to capture
                     // So if one contains '-' that means all of the steps are normal steps
                     if(firstPos.contains('-')){
                         completeTasksOnTurnChange(newTurn);
+
+                    } else { //It can perform chained capture
+                        updateUseablePieces(stepDissasembled[1].toInt());
                     }
 
 
@@ -161,7 +170,10 @@ bool GameModel::checkIfGameOver(Participant::ParticipantSideEnum playerOnTurnSid
 void GameModel::completeTasksOnTurnChange(Participant::ParticipantSideEnum playerOnTurnSide)
 {
     colorOnTurn = playerOnTurnSide;
-    if(state == GameState::ACTIVE) emit turnChangedSignal(playerOnTurnSide);
+    updateUseablePieces();
+    if(state == GameState::ACTIVE){
+        emit turnChangedSignal(playerOnTurnSide);
+    }
 }
 
 void GameModel::addStepToList(QString step)
@@ -184,5 +196,16 @@ void GameModel::addStepToList(QString step)
             stepList.append(pair);
 
         }
+    }
+}
+
+void GameModel::updateUseablePieces(int chainInd = -1)
+{
+    if(chainInd != -1){
+        useablePieces.clear();
+        useablePieces.insert(chainInd);
+    } else {
+        useablePieces =
+            useablePieceFinder->findUseablePieceIndecies(board->getActiveBoard(), colorOnTurn);
     }
 }

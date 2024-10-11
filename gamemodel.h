@@ -10,6 +10,7 @@
 #include "packettypekeeperservice.h"
 #include "participant.h"
 #include "validatorbase.h"
+#include "useablepiecefinder.h"
 
 class GameModel : public QObject
 {
@@ -41,7 +42,10 @@ private:
     bool checkIfGameOver(Participant::ParticipantSideEnum playerOnTurnSide);
     void completeTasksOnTurnChange(Participant::ParticipantSideEnum playerOnTurnSide);
     void addStepToList(QString step);
+    void updateUseablePieces(int chainInd = -1);
 
+    UseablePieceFinder* useablePieceFinder;
+    QSet<int> useablePieces;
     GameState state;
     Participant::ParticipantSideEnum colorOnTurn;
     Board* board;

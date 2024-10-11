@@ -27,6 +27,7 @@ add_executable(checkers_backend
   validatorbase.h validatorbase.cpp
   validatorpawn.h validatorpawn.cpp
   validatordame.h validatordame.cpp
+  useablepiecefinder.h useablepiecefinder.cpp
 )
 
 target_link_libraries(checkers_backend Qt${QT_VERSION_MAJOR}::Core Qt6::Network)
