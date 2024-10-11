@@ -19,6 +19,7 @@ void GameModel::restartGame()
 {
     colorOnTurn = Participant::ParticipantSideEnum::LIGHT;
     state = GameState::ACTIVE;
+    updateUseablePieces();
 }
 
 void GameModel::passStepForward(QString step)
@@ -38,9 +39,8 @@ void GameModel::passStepForward(QString step)
 
     for(int i = 0; i < validators.size(); i++){
         if(validators.at(i)->isValidatorsResponsibility(board->charAtIndex(from))){
-            QStringList stepDissasembled = step.split('x');
 
-            if(useablePieces.contains(stepDissasembled[0].toInt()) &&
+            if(useablePieces.contains(from) &&
                 validators.at(i)->isValidStep(step, board->getActiveBoard())){
 
                 board->executeStep(step);
@@ -68,7 +68,7 @@ void GameModel::passStepForward(QString step)
                         completeTasksOnTurnChange(newTurn);
 
                     } else { //It can perform chained capture
-                        updateUseablePieces(stepDissasembled[1].toInt());
+                        updateUseablePieces(to);
                     }
 
 
@@ -199,7 +199,7 @@ void GameModel::addStepToList(QString step)
     }
 }
 
-void GameModel::updateUseablePieces(int chainInd = -1)
+void GameModel::updateUseablePieces(int chainInd)
 {
     if(chainInd != -1){
         useablePieces.clear();
