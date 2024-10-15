@@ -74,6 +74,7 @@ void ValidatorBase::getSteps(int sRow, int sCol, int dX, int dY, int maxIteratio
             validContainer.insert(QString::number(sInd) + "-" + QString::number(indInStr));
         } else if (!isSameTeam(currentChar, sChar)) {
             checkIfPieceTakeable(sCol, sRow, dX, dY, sInd, board, validContainer);
+            break;
         }
     }
 }
