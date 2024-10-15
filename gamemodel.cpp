@@ -19,6 +19,8 @@ void GameModel::restartGame()
 {
     colorOnTurn = Participant::ParticipantSideEnum::LIGHT;
     state = GameState::ACTIVE;
+    board->restartBoard();
+    stepList.clear();
     updateUseablePieces();
 }
 
@@ -40,11 +42,14 @@ void GameModel::passStepForward(QString step)
     for(int i = 0; i < validators.size(); i++){
         if(validators.at(i)->isValidatorsResponsibility(board->charAtIndex(from))){
 
-            if(useablePieces.contains(from) &&
-                validators.at(i)->isValidStep(step, board->getActiveBoard())){
+            if((useablePieces.contains(from) &&
+                    validators.at(i)->isValidStep(step, board->getActiveBoard())) ||
+                    state == GameState::UNDER_STEUP){
 
-                board->executeStep(step);
+                // The order of these two matters!
                 addStepToList(step);
+                board->executeStep(step);
+
                 if(state == GameState::ACTIVE) emit stepHappenedSignal(step);
                 // check for turn change
                 Participant::ParticipantSideEnum newTurn =
@@ -81,6 +86,16 @@ void GameModel::passStepForward(QString step)
     }
 }
 
+void GameModel::passStepOnSetUp(QString step)
+{
+    if(state != GameState::UNDER_STEUP) return;
+
+    // The order matters, because the addStepToList() makes calculation
+    // based on the board state before moving
+    addStepToList(step);
+    board->executeStep(step);
+}
+
 void GameModel::undoStep(Participant::ParticipantSideEnum playerWhoInitiated)
 {
     if(stepList.length() == 0) return;
@@ -96,14 +111,23 @@ void GameModel::undoStep(Participant::ParticipantSideEnum playerWhoInitiated)
 
     if(indOfLastStepSequence == -1) return;
 
-    stepList = stepList.sliced(0, indOfLastStepSequence);
+    QList<QPair<Participant::ParticipantSideEnum, QStringList>> dummyList =
+        stepList.sliced(0, indOfLastStepSequence);
 
+    QStringList dummyToJoin;
+
+    for(int i = 0; i < dummyList.length(); i++){
+        dummyToJoin.append(dummyList.at(i).second.join(';'));
+    }
+    QString joinedSteps = dummyToJoin.join(';');
     restartGame();
-    setUpContinuedGame(getJoinedStepStr());
 
-    emit undoHappenedSignal(getJoinedStepStr());
+    setUpContinuedGame(joinedSteps);
+
+    emit undoHappenedSignal(joinedSteps);
 
     setColorOnTurn(playerWhoInitiated);
+    updateUseablePieces();
 }
 
 Participant::ParticipantSideEnum GameModel::getColorOnTurn() const
@@ -132,7 +156,7 @@ void GameModel::setUpContinuedGame(QString stepsSoFar)
     QStringList stepsHappened = stepsSoFar.split(';');
     for(int i = 0; i < stepsHappened.length(); i++){
         if(stepsHappened.at(i) == "") break;
-        passStepForward(stepsHappened.at(i));
+        passStepOnSetUp(stepsHappened.at(i));
     }
     state = GameState::ACTIVE;
 }
@@ -179,21 +203,31 @@ void GameModel::completeTasksOnTurnChange(Participant::ParticipantSideEnum playe
 
 void GameModel::addStepToList(QString step)
 {
+    QStringList stepDissasembled = step.split('-');
+    if(stepDissasembled.length() == 1) {
+        stepDissasembled = step.split('x');
+    }
+
+    // Determine piece color based on the color of the piece the step is moving
+    int from = stepDissasembled[0].toInt();
+    Participant::ParticipantSideEnum pS = board->getActiveBoard().at(from).isLower()?
+        Participant::ParticipantSideEnum::DARK:
+        Participant::ParticipantSideEnum::LIGHT;
+
     if(stepList.isEmpty()) {
         QStringList steps;
         steps.append(step);
-        QPair<Participant::ParticipantSideEnum, QStringList> pair(colorOnTurn, steps);
+        QPair<Participant::ParticipantSideEnum, QStringList> pair(pS, steps);
         stepList.append(pair);
 
     } else {
-        QPair<Participant::ParticipantSideEnum, QStringList> lastStepItem = stepList.last();
-        if(lastStepItem.first == colorOnTurn) {
-            lastStepItem.second.append(step);
+        if(stepList[stepList.length() - 1].first == pS) {
+            stepList[stepList.length() - 1].second.append(step);
 
         } else {
             QStringList steps;
             steps.append(step);
-            QPair<Participant::ParticipantSideEnum, QStringList> pair(colorOnTurn, steps);
+            QPair<Participant::ParticipantSideEnum, QStringList> pair(pS, steps);
             stepList.append(pair);
 
         }

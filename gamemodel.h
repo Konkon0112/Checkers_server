@@ -26,6 +26,7 @@ public:
 
     void restartGame();
     void passStepForward(QString step);
+    void passStepOnSetUp(QString step);
     void undoStep(Participant::ParticipantSideEnum playerWhoInitiated);
     Participant::ParticipantSideEnum getColorOnTurn() const;
     QString getJoinedStepStr();
