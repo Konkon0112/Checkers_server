@@ -75,6 +75,8 @@ void ValidatorBase::getSteps(int sRow, int sCol, int dX, int dY, int maxIteratio
         } else if (!isSameTeam(currentChar, sChar)) {
             checkIfPieceTakeable(sCol, sRow, dX, dY, sInd, board, validContainer);
             break;
+        } else { // Same team piece
+            break;
         }
     }
 }
