@@ -131,6 +131,7 @@ void GameModel::setUpContinuedGame(QString stepsSoFar)
     state = GameState::UNDER_STEUP;
     QStringList stepsHappened = stepsSoFar.split(';');
     for(int i = 0; i < stepsHappened.length(); i++){
+        if(stepsHappened.at(i) == "") break;
         passStepForward(stepsHappened.at(i));
     }
     state = GameState::ACTIVE;
