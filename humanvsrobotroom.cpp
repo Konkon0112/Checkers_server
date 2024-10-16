@@ -9,6 +9,22 @@ HumanVsRobotRoom::HumanVsRobotRoom(Participant::ParticipantSideEnum robotS, QObj
 {
     roomType = RoomBase::RoomType::HUMAN_VS_ROBOT;
     RobotParticipant* rParticipant = new RobotParticipant(robotS, this);
+
+    // - start game
+    connect(this, SIGNAL(gameStartedSignal(Participant::ParticipantSideEnum, QString)), rParticipant, SLOT(gameStartedSlot(Participant::ParticipantSideEnum, QString)));
+    // - initiate step
+    connect(rParticipant, SIGNAL(stepInitiatedSignal(QString)), this, SLOT(stepInitiatedSlot(QString)));
+    // - step happened
+    connect(this, SIGNAL(stepHappenedSignal(QString)), rParticipant, SLOT(stepHappenedSlot(QString)));
+    // - turn changed
+    connect(this, SIGNAL(turnChangedSignal(Participant::ParticipantSideEnum)), rParticipant, SLOT(turnChangedSlot(Participant::ParticipantSideEnum)));
+    // - undo needs approval
+    connect(this, SIGNAL(undoNeedsApproval(Participant::ParticipantSideEnum)), rParticipant, SLOT(undoNeedsApprovalSlot(Participant::ParticipantSideEnum)));
+    // - approve undo
+    connect(rParticipant, SIGNAL(approveUndoSignal()), this, SLOT(approveUndoSlot()));
+    // - undo happened
+    connect(this, SIGNAL(undoHappenedSignal(QString)), rParticipant, SLOT(undoHappenedSlot(QString)));
+
     pList.append(rParticipant);
 }
 

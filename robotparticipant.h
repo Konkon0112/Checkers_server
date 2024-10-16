@@ -3,8 +3,11 @@
 
 #include <QObject>
 #include <QTcpSocket>
+#include <QList>
 
 #include "participant.h"
+#include "board.h"
+#include "validatorbase.h"
 
 class RobotParticipant : public Participant
 {
@@ -23,6 +26,15 @@ public slots:
 
 protected slots:
     void gameStartedSlot(Participant::ParticipantSideEnum nextOnTurn, QString stepsSoFar) override;
+
+private:
+    void makeNextStep();
+    ValidatorBase* findValidator(QChar piece);
+    void executeJoinedSteps(QString joinedSteps);
+
+    Board* board;
+    QList<ValidatorBase*> validators;
+    QString lastStepMade = "";
 };
 
 #endif // ROBOTPARTICIPANT_H

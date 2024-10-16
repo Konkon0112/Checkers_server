@@ -49,7 +49,6 @@ void RoomBase::join(QTcpSocket *socket)
                               pS,
                               this);
 
-    //TODO: connect signals between room and participant
     // - start game
     connect(this, SIGNAL(gameStartedSignal(Participant::ParticipantSideEnum, QString)), hP, SLOT(gameStartedSlot(Participant::ParticipantSideEnum, QString)));
     // - initiate step
