@@ -50,13 +50,11 @@ public slots:
 
     virtual void gameStartedSlot(Participant::ParticipantSideEnum nextOnTurn, QString stepsSoFar) = 0;
 
-    virtual void stepHappenedSlot(QString step) = 0;
+    virtual void stepHappenedSlot(QString step, Participant::ParticipantSideEnum newTurnColor) = 0;
 
     virtual void undoNeedsApprovalSlot(Participant::ParticipantSideEnum approvingSideColor) = 0;
 
-    virtual void undoHappenedSlot(QString newStepsSoFar) = 0;
-
-    virtual void turnChangedSlot(Participant::ParticipantSideEnum nextOnTurn) = 0;
+    virtual void undoHappenedSlot(QString newStepsSoFar, Participant::ParticipantSideEnum nextC) = 0;
 
 protected slots:
 };

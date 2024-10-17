@@ -8,14 +8,11 @@ RoomBase::RoomBase(RoomState rs, QObject *parent)
 {
     roomState = rs;
     gameModel = new GameModel(this);
-    connect(gameModel, SIGNAL(stepHappenedSignal(QString)),
-            this, SLOT(stepHappenedSlot(QString)));
+    connect(gameModel, SIGNAL(stepHappenedSignal(QString, Participant::ParticipantSideEnum)),
+            this, SLOT(stepHappenedSlot(QString, Participant::ParticipantSideEnum)));
 
-    connect(gameModel, SIGNAL(turnChangedSignal(Participant::ParticipantSideEnum)),
-            this, SLOT(turnChangedSlot(Participant::ParticipantSideEnum)));
-
-    connect(gameModel, SIGNAL(undoHappenedSignal(QString)),
-            this, SLOT(undoHappenedSlot(QString)));
+    connect(gameModel, SIGNAL(undoHappenedSignal(QString, Participant::ParticipantSideEnum)),
+            this, SLOT(undoHappenedSlot(QString, Participant::ParticipantSideEnum)));
 
     connect(gameModel, SIGNAL(gameOverSignal(Participant::ParticipantSideEnum)),
             this, SLOT(gameOverSlot(Participant::ParticipantSideEnum)));
@@ -50,15 +47,13 @@ void RoomBase::join(QTcpSocket *socket)
                               this);
 
     // - start game
-    connect(this, SIGNAL(gameStartedSignal(Participant::ParticipantSideEnum, QString)), hP, SLOT(gameStartedSlot(Participant::ParticipantSideEnum, QString)));
+    connect(this, SIGNAL(gameStartedSignal(Participant::ParticipantSideEnum,QString)),
+            hP,SLOT(gameStartedSlot(Participant::ParticipantSideEnum,QString)));
     // - initiate step
     connect(hP, SIGNAL(stepInitiatedSignal(QString)), this, SLOT(stepInitiatedSlot(QString)));
     // - step happened
-    connect(this, SIGNAL(stepHappenedSignal(QString)), hP, SLOT(stepHappenedSlot(QString)));
-    // - send steps so far (maybe don't need this)
-
-    // - turn changed
-    connect(this, SIGNAL(turnChangedSignal(Participant::ParticipantSideEnum)), hP, SLOT(turnChangedSlot(Participant::ParticipantSideEnum)));
+    connect(this, SIGNAL(stepHappenedSignal(QString,Participant::ParticipantSideEnum)),
+            hP, SLOT(stepHappenedSlot(QString,Participant::ParticipantSideEnum)));
     // - initiate undo
     connect(hP, SIGNAL(undoInitiatedSignal()), this, SLOT(undoInitiatedSlot()));
     // - undo needs approval
@@ -68,14 +63,15 @@ void RoomBase::join(QTcpSocket *socket)
     // - reject undo
     connect(hP, SIGNAL(rejectUndoSignal()), this, SLOT(rejectUndoSlot()));
     // - undo happened
-    connect(this, SIGNAL(undoHappenedSignal(QString)), hP, SLOT(undoHappenedSlot(QString)));
+    connect(this, SIGNAL(undoHappenedSignal(QString,Participant::ParticipantSideEnum)),
+            hP, SLOT(undoHappenedSlot(QString,Participant::ParticipantSideEnum)));
     // - game over
     connect(this, SIGNAL(gameOverSignal(Participant::ParticipantSideEnum)), hP, SLOT(gameOverSlot(Participant::ParticipantSideEnum)));
     // - player quit
     connect(hP, SIGNAL(playerQuitSignal()), this, SLOT(playerQuitSlot()));
 
 
-    this->pList.append(hP);
+    this->pList.prepend(hP);
 
     if(pNum == 1){
         roomState = RoomState::ACTIVE;
@@ -162,9 +158,9 @@ void RoomBase::undoInitiatedSlot()
     emit undoNeedsApproval(approvingSide);
 }
 
-void RoomBase::undoHappenedSlot(QString newStepsSoFar)
+void RoomBase::undoHappenedSlot(QString newStepsSoFar, Participant::ParticipantSideEnum nextC)
 {
-    emit undoHappenedSignal(newStepsSoFar);
+    emit undoHappenedSignal(newStepsSoFar, nextC);
 }
 
 void RoomBase::approveUndoSlot()
@@ -197,14 +193,9 @@ void RoomBase::rejectUndoSlot()
     undoInitiatedBy = Participant::ParticipantSideEnum::NONE;
 }
 
-void RoomBase::stepHappenedSlot(QString step)
+void RoomBase::stepHappenedSlot(QString step, Participant::ParticipantSideEnum newTurnColor)
 {
-    emit stepHappenedSignal(step);
-}
-
-void RoomBase::turnChangedSlot(Participant::ParticipantSideEnum nextOnTurn)
-{
-    emit turnChangedSignal(nextOnTurn);
+    emit stepHappenedSignal(step, newTurnColor);
 }
 
 void RoomBase::gameOverSlot(Participant::ParticipantSideEnum winner)

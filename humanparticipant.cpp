@@ -95,14 +95,17 @@ void HumanParticipant::gameStartedSlot(Participant::ParticipantSideEnum nextOnTu
     sendMessage(message);
 }
 
-void HumanParticipant::stepHappenedSlot(QString step)
+void HumanParticipant::stepHappenedSlot(QString step, Participant::ParticipantSideEnum newTurnColor)
 {
     QString packetType = ptKeeper->enumToStringPacketType(PacketTypeKeeperService::PacketTypeEnum::STEP_HAPPENED);
+    QString turnString = ptKeeper->enumToStringPieceColor(newTurnColor);
 
     QByteArray message;
     message.append(packetType.toUtf8());
     message.append(ptKeeper->getPacketSeparator());
     message.append(step.toUtf8());
+    message.append(ptKeeper->getPacketSeparator());
+    message.append(turnString.toUtf8());
 
     sendMessage(message);
 }
@@ -118,14 +121,17 @@ void HumanParticipant::undoNeedsApprovalSlot(Participant::ParticipantSideEnum ap
     sendMessage(message);
 }
 
-void HumanParticipant::undoHappenedSlot(QString newStepsSoFar)
+void HumanParticipant::undoHappenedSlot(QString newStepsSoFar, Participant::ParticipantSideEnum nextC)
 {
     QString packetType = ptKeeper->enumToStringPacketType(PacketTypeKeeperService::PacketTypeEnum::UNDO_STEP_APPROVED);
+    QString turnString = ptKeeper->enumToStringPieceColor(nextC);
 
     QByteArray message;
     message.append(packetType.toUtf8());
     message.append(ptKeeper->getPacketSeparator());
     message.append(newStepsSoFar.toUtf8());
+    message.append(ptKeeper->getPacketSeparator());
+    message.append(turnString.toUtf8());
 
     sendMessage(message);
 }
@@ -139,19 +145,6 @@ void HumanParticipant::gameOverSlot(Participant::ParticipantSideEnum winner)
     message.append(packetType.toUtf8());
     message.append(ptKeeper->getPacketSeparator());
     message.append(w.toUtf8());
-
-    sendMessage(message);
-}
-
-void HumanParticipant::turnChangedSlot(Participant::ParticipantSideEnum nextOnTurn)
-{
-    QString packetType = ptKeeper->enumToStringPacketType(PacketTypeKeeperService::PacketTypeEnum::TURN_CHANGED);
-    QString nextColor = ptKeeper->enumToStringPieceColor(nextOnTurn);
-
-    QByteArray message;
-    message.append(packetType.toUtf8());
-    message.append(ptKeeper->getPacketSeparator());
-    message.append(nextColor.toUtf8());
 
     sendMessage(message);
 }

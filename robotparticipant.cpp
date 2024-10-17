@@ -62,6 +62,39 @@ void RobotParticipant::makeNextStep()
     lastStepMade = finalList[stepInd];
 }
 
+void RobotParticipant::makeChainedStep(QString lastStep)
+{
+    QString activeBoard = board->getActiveBoard();
+    QStringList stepDissasembled = lastStep.split('x');
+    if(stepDissasembled.length() == 0) return;
+    int to = stepDissasembled[1].toInt();
+
+    ValidatorBase* val = findValidator(activeBoard[to]);
+    if(!val) return;
+
+    QSet<QString> posStepSet = val->getValidIndecies(to, activeBoard);
+
+    QStringList possibleNormalSteps;
+    QStringList possibleTakingSteps;
+
+    for (auto i = posStepSet.cbegin(), end = posStepSet.cend(); i != end; ++i){
+        QString stepValue = *i;
+        if(stepValue.contains('x')){
+            possibleTakingSteps.append(stepValue);
+        } else {
+            possibleNormalSteps.append(stepValue);
+        }
+    }
+
+    QStringList finalList = possibleTakingSteps.length() == 0?
+                                possibleNormalSteps : possibleTakingSteps;
+
+    // Step randomly for now
+    int stepInd = QRandomGenerator::global()->bounded(finalList.length());
+    emit stepInitiatedSignal(finalList[stepInd]);
+    lastStepMade = finalList[stepInd];
+}
+
 ValidatorBase *RobotParticipant::findValidator(QChar piece)
 {
     ValidatorBase* res = nullptr;
@@ -83,13 +116,15 @@ void RobotParticipant::executeJoinedSteps(QString joinedSteps)
     }
 }
 
-void RobotParticipant::stepHappenedSlot(QString step)
+void RobotParticipant::stepHappenedSlot(QString step, Participant::ParticipantSideEnum newTurnColor)
 {
     if(step == "") return;
     board->executeStep(step);
 
-    if(step == lastStepMade &&
-        step.contains('x')){
+    if(newTurnColor == pSide && step == lastStepMade){
+        qInfo() << "chained";
+        makeChainedStep(step);
+    } else if (newTurnColor == pSide){
         makeNextStep();
     }
 }
@@ -100,14 +135,11 @@ void RobotParticipant::undoNeedsApprovalSlot(Participant::ParticipantSideEnum ap
     emit approveUndoSignal();
 }
 
-void RobotParticipant::undoHappenedSlot(QString newStepsSoFar)
+void RobotParticipant::undoHappenedSlot(QString newStepsSoFar, Participant::ParticipantSideEnum nextC)
 {
     board->restartBoard();
     executeJoinedSteps(newStepsSoFar);
-}
-
-void RobotParticipant::turnChangedSlot(Participant::ParticipantSideEnum nextOnTurn)
-{
-    if(!isPlayerSide(nextOnTurn)) return;
-    makeNextStep();
+    if(pSide == nextC){
+        makeNextStep();
+    }
 }

@@ -34,10 +34,9 @@ public:
     void setUpContinuedGame(QString stepsSoFar);
 
 signals:
-    void stepHappenedSignal(QString step);
-    void turnChangedSignal(Participant::ParticipantSideEnum newTurnColor);
+    void stepHappenedSignal(QString step, Participant::ParticipantSideEnum newTurnColor);
     void gameOverSignal(Participant::ParticipantSideEnum winner);
-    void undoHappenedSignal(QString newStepsSoFar);
+    void undoHappenedSignal(QString newStepsSoFar, Participant::ParticipantSideEnum newColorOnTurn);
 
 private:
     bool checkIfGameOver(Participant::ParticipantSideEnum playerOnTurnSide);

@@ -8,8 +8,6 @@
 #include "participant.h"
 #include "gamemodel.h"
 
-// Needed a base class for this, because I want to create the robot
-// player in the constructor of the HumanVsRobotRoom class
 class RoomBase : public QObject
 {
     Q_OBJECT
@@ -50,23 +48,21 @@ protected slots:
 private slots:
     void stepInitiatedSlot(QString step);
     void undoInitiatedSlot();
-    void undoHappenedSlot(QString newStepsSoFar); // Received from gameModel
+    void undoHappenedSlot(QString newStepsSoFar, Participant::ParticipantSideEnum nextC); // Received from gameModel
     void approveUndoSlot();
     void rejectUndoSlot();
-    void stepHappenedSlot(QString step); // Received from game model
-    void turnChangedSlot(Participant::ParticipantSideEnum nextOnTurn);
+    void stepHappenedSlot(QString step, Participant::ParticipantSideEnum newTurnColor); // Received from game model
     void gameOverSlot(Participant::ParticipantSideEnum winner); // Received from game model
 
 signals:
     void removeRoomFromListSignal();
     void playerQuitGameSignal(QTcpSocket* socket); // Room sends to server for it to reconnect to readyRead
     void gameStartedSignal(Participant::ParticipantSideEnum colorOnTurn, QString stepsSoFar); // Sent to all participant
-    void undoHappenedSignal(QString newStepsSoFar);
+    void undoHappenedSignal(QString newStepsSoFar, Participant::ParticipantSideEnum nextC);
     void undoApprovedSignal(); //
     void undoNeedsApproval(Participant::ParticipantSideEnum approvingSide);
-    void stepHappenedSignal(QString step); // Sent to players
+    void stepHappenedSignal(QString step, Participant::ParticipantSideEnum newTurnColor); // Sent to players
     void gameOverSignal(Participant::ParticipantSideEnum winner); // Sent to players
-    void turnChangedSignal(Participant::ParticipantSideEnum nextOnTurn); // Sent to players
 };
 
 #endif // ROOMBASE_H

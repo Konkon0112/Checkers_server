@@ -32,12 +32,11 @@ signals:
     void rejectUndoSignal();
 
 public slots:
-    void stepHappenedSlot(QString step) override;
+    void stepHappenedSlot(QString step, Participant::ParticipantSideEnum newTurnColor) override;
     void undoNeedsApprovalSlot(Participant::ParticipantSideEnum approvingSideColor) override;
-    void undoHappenedSlot(QString newStepsSoFar) override;
+    void undoHappenedSlot(QString newStepsSoFar, Participant::ParticipantSideEnum nextC) override;
     void gameStartedSlot(Participant::ParticipantSideEnum nextOnTurn, QString stepsSoFar) override;
     void gameOverSlot(Participant::ParticipantSideEnum winner);
-    void turnChangedSlot(Participant::ParticipantSideEnum nextOnTurn) override;
 
 protected slots:
     void handlingReadyReadSlot();

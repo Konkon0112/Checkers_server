@@ -50,7 +50,6 @@ void GameModel::passStepForward(QString step)
                 addStepToList(step);
                 board->executeStep(step);
 
-                if(state == GameState::ACTIVE) emit stepHappenedSignal(step);
                 // check for turn change
                 Participant::ParticipantSideEnum newTurn =
                     colorOnTurn == Participant::ParticipantSideEnum::DARK?
@@ -58,28 +57,36 @@ void GameModel::passStepForward(QString step)
 
                 bool isGameOver = checkIfGameOver(newTurn);
                 if(isGameOver) return;
+                Participant::ParticipantSideEnum nextColor;
 
                 if(step.contains('x')){
                     QSet<QString> possibleSteps = validators.at(i)->getValidIndecies(to, board->getActiveBoard());
-                    if(possibleSteps.empty()){
-                        completeTasksOnTurnChange(newTurn);
-                        return;
-                    }
-                    QString firstPos = *possibleSteps.begin();
 
-                    // If a piece can capture, then it has to capture
-                    // So if one contains '-' that means all of the steps are normal steps
-                    if(firstPos.contains('-')){
+                    if(possibleSteps.empty()){ // If piece can't step after take
+                        nextColor = newTurn;
                         completeTasksOnTurnChange(newTurn);
 
-                    } else { //It can perform chained capture
-                        updateUseablePieces(to);
+                    } else {
+                        QString firstPos = *possibleSteps.begin();
+
+                        // If a piece can capture, then it has to capture
+                        // So if one contains '-' that means all of the steps are normal steps
+                        if(firstPos.contains('-')){
+                            nextColor = newTurn;
+                            completeTasksOnTurnChange(newTurn);
+
+                        } else { //It can perform chained capture
+                            updateUseablePieces(to);
+                            nextColor = colorOnTurn;
+                        }
                     }
 
 
-                } else {
+                } else { // If the last move was not capture
+                    nextColor = newTurn;
                     completeTasksOnTurnChange(newTurn);
                 }
+                if(state == GameState::ACTIVE) emit stepHappenedSignal(step, nextColor);
             }
             break;
         }
@@ -124,9 +131,9 @@ void GameModel::undoStep(Participant::ParticipantSideEnum playerWhoInitiated)
 
     setUpContinuedGame(joinedSteps);
 
-    emit undoHappenedSignal(joinedSteps);
+    colorOnTurn = playerWhoInitiated;
 
-    setColorOnTurn(playerWhoInitiated);
+    emit undoHappenedSignal(joinedSteps, playerWhoInitiated);
     updateUseablePieces();
 }
 
@@ -147,7 +154,6 @@ QString GameModel::getJoinedStepStr()
 void GameModel::setColorOnTurn(Participant::ParticipantSideEnum newColorOnTurn)
 {
     colorOnTurn = newColorOnTurn;
-    emit turnChangedSignal(newColorOnTurn);
 }
 
 void GameModel::setUpContinuedGame(QString stepsSoFar)
@@ -196,9 +202,6 @@ void GameModel::completeTasksOnTurnChange(Participant::ParticipantSideEnum playe
 {
     colorOnTurn = playerOnTurnSide;
     updateUseablePieces();
-    if(state == GameState::ACTIVE){
-        emit turnChangedSignal(playerOnTurnSide);
-    }
 }
 
 void GameModel::addStepToList(QString step)

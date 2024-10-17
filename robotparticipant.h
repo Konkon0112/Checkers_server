@@ -19,16 +19,16 @@ public:
 signals:
 
 public slots:
-    void stepHappenedSlot(QString step) override;
-    void turnChangedSlot(Participant::ParticipantSideEnum nextOnTurn) override;
+    void stepHappenedSlot(QString step, Participant::ParticipantSideEnum newTurnColor) override;
     void undoNeedsApprovalSlot(Participant::ParticipantSideEnum approvingSideColor) override;
-    void undoHappenedSlot(QString newStepsSoFar) override;
+    void undoHappenedSlot(QString newStepsSoFar, Participant::ParticipantSideEnum nextC) override;
 
 protected slots:
     void gameStartedSlot(Participant::ParticipantSideEnum nextOnTurn, QString stepsSoFar) override;
 
 private:
     void makeNextStep();
+    void makeChainedStep(QString lastStep);
     ValidatorBase* findValidator(QChar piece);
     void executeJoinedSteps(QString joinedSteps);
 
