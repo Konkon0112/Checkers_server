@@ -10,6 +10,7 @@ Board::Board(QObject *parent)
 
 void Board::executeStep(QString step)
 {
+    if(step == "") return;
     QStringList stepDissasembled = step.split('-');
     if(stepDissasembled.length() == 1){
         stepDissasembled = step.split('x');

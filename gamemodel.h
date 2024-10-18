@@ -24,6 +24,7 @@ public:
         FINISHED,
     };
 
+    void startGame();
     void restartGame();
     void passStepForward(QString step);
     void passStepOnSetUp(QString step);
@@ -31,7 +32,7 @@ public:
     Participant::ParticipantSideEnum getColorOnTurn() const;
     QString getJoinedStepStr();
     void setColorOnTurn(Participant::ParticipantSideEnum newColorOnTurn);
-    void setUpContinuedGame(QString stepsSoFar);
+    void setUpContinuedGame(QString stepsSoFar, Participant::ParticipantSideEnum nextColor);
 
 signals:
     void stepHappenedSignal(QString step, Participant::ParticipantSideEnum newTurnColor);

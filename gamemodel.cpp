@@ -15,6 +15,12 @@ GameModel::GameModel(QObject *parent)
     useablePieceFinder = new UseablePieceFinder(this);
 }
 
+void GameModel::startGame()
+{
+    state = GameState::ACTIVE;
+    updateUseablePieces();
+}
+
 void GameModel::restartGame()
 {
     colorOnTurn = Participant::ParticipantSideEnum::LIGHT;
@@ -129,7 +135,8 @@ void GameModel::undoStep(Participant::ParticipantSideEnum playerWhoInitiated)
     QString joinedSteps = dummyToJoin.join(';');
     restartGame();
 
-    setUpContinuedGame(joinedSteps);
+    setUpContinuedGame(joinedSteps, playerWhoInitiated);
+    stepList = dummyList;
 
     colorOnTurn = playerWhoInitiated;
 
@@ -156,7 +163,7 @@ void GameModel::setColorOnTurn(Participant::ParticipantSideEnum newColorOnTurn)
     colorOnTurn = newColorOnTurn;
 }
 
-void GameModel::setUpContinuedGame(QString stepsSoFar)
+void GameModel::setUpContinuedGame(QString stepsSoFar, Participant::ParticipantSideEnum nextColor)
 {
     state = GameState::UNDER_STEUP;
     QStringList stepsHappened = stepsSoFar.split(';');
@@ -164,6 +171,7 @@ void GameModel::setUpContinuedGame(QString stepsSoFar)
         if(stepsHappened.at(i) == "") break;
         passStepOnSetUp(stepsHappened.at(i));
     }
+    colorOnTurn = nextColor;
     state = GameState::ACTIVE;
 }
 

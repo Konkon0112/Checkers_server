@@ -14,17 +14,16 @@ public:
         JOIN_NEW_SINGLE_GAME,
         CONTINUE_SINGLE_GAME,
         JOIN_MULTI_GAME,
-        SEND_STEPS_SO_FAR,
         QUIT_GAME,
         GAME_STARTED,
         GAME_OVER,
         INITIATE_STEP,
         STEP_HAPPENED,
-        TURN_CHANGED,
         UNDO_STEP_INITIATED,
         UNDO_STEP_APPROVED,
         REJECT_UNDO,
         APPROVE_UNDO,
+        NOTIFICATION,
         UNKNOWN, // Need this in case some unknown string gets send from client
     };
 

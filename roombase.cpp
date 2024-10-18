@@ -8,11 +8,11 @@ RoomBase::RoomBase(RoomState rs, QObject *parent)
 {
     roomState = rs;
     gameModel = new GameModel(this);
-    connect(gameModel, SIGNAL(stepHappenedSignal(QString, Participant::ParticipantSideEnum)),
-            this, SLOT(stepHappenedSlot(QString, Participant::ParticipantSideEnum)));
+    connect(gameModel, SIGNAL(stepHappenedSignal(QString,Participant::ParticipantSideEnum)),
+            this, SLOT(stepHappenedSlot(QString,Participant::ParticipantSideEnum)));
 
-    connect(gameModel, SIGNAL(undoHappenedSignal(QString, Participant::ParticipantSideEnum)),
-            this, SLOT(undoHappenedSlot(QString, Participant::ParticipantSideEnum)));
+    connect(gameModel, SIGNAL(undoHappenedSignal(QString,Participant::ParticipantSideEnum)),
+            this, SLOT(undoHappenedSlot(QString,Participant::ParticipantSideEnum)));
 
     connect(gameModel, SIGNAL(gameOverSignal(Participant::ParticipantSideEnum)),
             this, SLOT(gameOverSlot(Participant::ParticipantSideEnum)));
@@ -75,7 +75,7 @@ void RoomBase::join(QTcpSocket *socket)
 
     if(pNum == 1){
         roomState = RoomState::ACTIVE;
-        gameModel->restartGame();
+        gameModel->startGame();
     }
 
     if(pNum >= 1){

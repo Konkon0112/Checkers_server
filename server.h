@@ -36,7 +36,7 @@ private:
 
     void handleJoinNewSinglePlayer(QString data, QTcpSocket* socket);
     void handleContinueSinglePlayer(QString data, QTcpSocket* socket);
-    void joinMultiPlayer(QString data, QTcpSocket* socket);
+    void joinMultiPlayer(QTcpSocket* socket);
 
     QList<QTcpSocket*> sList;
     QList<RoomBase*> rList;

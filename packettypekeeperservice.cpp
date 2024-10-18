@@ -7,17 +7,16 @@ PacketTypeKeeperService::PacketTypeKeeperService(QObject *parent)
     packetMap.insert(PacketTypeEnum::JOIN_NEW_SINGLE_GAME, "JOIN_NEW_SINGLE_GAME");
     packetMap.insert(PacketTypeEnum::CONTINUE_SINGLE_GAME, "CONTINUE_SINGLE_GAME");
     packetMap.insert(PacketTypeEnum::JOIN_MULTI_GAME, "JOIN_MULTI_GAME");
-    packetMap.insert(PacketTypeEnum::SEND_STEPS_SO_FAR, "SEND_STEPS_SO_FAR");
     packetMap.insert(PacketTypeEnum::QUIT_GAME, "QUIT_GAME");
     packetMap.insert(PacketTypeEnum::GAME_STARTED, "GAME_STARTED");
     packetMap.insert(PacketTypeEnum::GAME_OVER, "GAME_OVER");
     packetMap.insert(PacketTypeEnum::INITIATE_STEP, "INITIATE_STEP");
     packetMap.insert(PacketTypeEnum::STEP_HAPPENED, "STEP_HAPPENED");
-    packetMap.insert(PacketTypeEnum::TURN_CHANGED, "TURN_CHANGED");
     packetMap.insert(PacketTypeEnum::UNDO_STEP_INITIATED, "UNDO_STEP_INITIATED");
     packetMap.insert(PacketTypeEnum::UNDO_STEP_APPROVED, "UNDO_STEP_APPROVED");
     packetMap.insert(PacketTypeEnum::APPROVE_UNDO, "APPROVE_UNDO");
     packetMap.insert(PacketTypeEnum::REJECT_UNDO, "REJECT_UNDO");
+    packetMap.insert(PacketTypeEnum::NOTIFICATION, "NOTIFICATION");
 
     //Collect the packets the server object should handle
     serverList.append(PacketTypeEnum::JOIN_NEW_SINGLE_GAME);
