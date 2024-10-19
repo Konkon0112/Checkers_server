@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QTcpSocket>
 #include <QList>
+#include <QThreadPool>
 
 #include "participant.h"
 #include "board.h"
@@ -37,6 +38,7 @@ private:
     Board* board;
     QList<ValidatorBase*> validators;
     QString lastStepMade = "";
+    QThreadPool* pool;
 };
 
 #endif // ROBOTPARTICIPANT_H

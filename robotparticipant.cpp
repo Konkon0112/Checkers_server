@@ -12,6 +12,7 @@ RobotParticipant::RobotParticipant(ParticipantSideEnum pS, QObject *parent)
     board = new Board(this);
     validators.append(new ValidatorPawn(this));
     validators.append(new ValidatorDame(this));
+    pool = QThreadPool::globalInstance();
 }
 
 bool RobotParticipant::usingThisSocket(QTcpSocket *soc)
