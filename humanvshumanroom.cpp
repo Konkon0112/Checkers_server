@@ -17,7 +17,10 @@ void HumanVsHumanRoom::playerQuitSlot()
     disconnect(this, nullptr, participant, nullptr);
     disconnect(participant, nullptr, this, nullptr);
 
-    if(participant->getPType() == Participant::ParticipantTypeEnum::PLAYER && pNum == 2){
+
+    if( roomState == RoomState::ACTIVE &&
+        participant->getPType() == Participant::ParticipantTypeEnum::PLAYER &&
+        pNum == 2){
         Participant::ParticipantSideEnum winner =
             participant->getPSide() == Participant::ParticipantSideEnum::DARK?
                 Participant::ParticipantSideEnum::LIGHT : Participant::ParticipantSideEnum::DARK;
@@ -32,6 +35,5 @@ void HumanVsHumanRoom::playerQuitSlot()
 
     delete participant;
 
-    // Now 0
-    if(pNum == 1) emit removeRoomFromListSignal();
+    if(pNum == 1 && roomState == RoomState::ACTIVE) emit removeRoomFromListSignal();
 }

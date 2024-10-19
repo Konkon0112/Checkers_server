@@ -113,9 +113,9 @@ void RoomBase::dealWithDisconnectedParticipant(QTcpSocket* socket)
 
             pList.removeAll(hP);
             qInfo() << hP  << "left the game";
-
             delete hP;
-            if(pNum == 1) emit removeRoomFromListSignal();
+
+            if(pNum == 1 && roomState == RoomBase::RoomState::ACTIVE) emit removeRoomFromListSignal();
         }
     }
 }
@@ -137,17 +137,28 @@ void RoomBase::stepInitiatedSlot(QString step)
     //  - player on turn
     QObject* signalSender = sender();
     Participant* participant = qobject_cast<Participant*>(signalSender);
-    if(!participant->isPlayerSide(gameModel->getColorOnTurn())) return;
+    if(participant->isPlayerSide(Participant::ParticipantSideEnum::NONE)){
+        participant->sendNotification(ToastTypeEnum::WARNING, "Spectators cannot initiate moves!");
+        return;
+    }
+    if(!participant->isPlayerSide(gameModel->getColorOnTurn())){
+        participant->sendNotification(ToastTypeEnum::WARNING, "It is not your turn to move yet!");
+        return;
+    }
 
     gameModel->passStepForward(step);
 }
 
 void RoomBase::undoInitiatedSlot()
 {
-    if(undoInitiatedBy != Participant::ParticipantSideEnum::NONE) return;
-
     QObject* signalSender = sender();
     Participant* participant = qobject_cast<Participant*>(signalSender);
+
+    if(undoInitiatedBy != Participant::ParticipantSideEnum::NONE){
+        participant->sendNotification(ToastTypeEnum::WARNING, "There is an active undo request.");
+        return;
+    }
+
     Participant::ParticipantSideEnum pS = participant->getPSide();
 
     Participant::ParticipantSideEnum approvingSide =
@@ -172,7 +183,10 @@ void RoomBase::approveUndoSlot()
         undoInitiatedBy == Participant::ParticipantSideEnum::DARK?
             Participant::ParticipantSideEnum::LIGHT : Participant::ParticipantSideEnum::DARK;
 
-    if(participant->getPSide() != approvingSide) return;
+    if(participant->getPSide() != approvingSide){
+        participant->sendNotification(ToastTypeEnum::WARNING, "You cannot approve this undo request!");
+        return;
+    }
     gameModel->undoStep(undoInitiatedBy);
 
     emit undoApprovedSignal();
@@ -188,7 +202,10 @@ void RoomBase::rejectUndoSlot()
         undoInitiatedBy == Participant::ParticipantSideEnum::DARK?
             Participant::ParticipantSideEnum::LIGHT : Participant::ParticipantSideEnum::DARK;
 
-    if(participant->getPSide() != approvingSide) return;
+    if(participant->getPSide() != approvingSide){
+        participant->sendNotification(ToastTypeEnum::WARNING, "You cannot reject this undo request!");
+        return;
+    }
 
     undoInitiatedBy = Participant::ParticipantSideEnum::NONE;
 }

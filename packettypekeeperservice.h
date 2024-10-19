@@ -5,6 +5,7 @@
 #include <QMap>
 #include <QList>
 #include "participant.h"
+#include "ToastTypeEnum.h"
 
 class PacketTypeKeeperService : public QObject
 {
@@ -35,6 +36,9 @@ public:
     QString enumToStringPieceColor(Participant::ParticipantSideEnum pC);
     Participant::ParticipantSideEnum stringToEnumPieceColor(QString pCInString);
 
+    QString enumToStringToastType(ToastTypeEnum t);
+    ToastTypeEnum stringToEnumToastType(QString tInString);
+
     QString shouldServerHandle(QString packet);
     QString shouldParticipantHandle(QString packet);
 
@@ -45,6 +49,7 @@ private:
 
     QMap<PacketTypeEnum, QString> packetMap;
     QMap<Participant::ParticipantSideEnum, QString> pieceColorMap;
+    QMap<ToastTypeEnum, QString> toastTypeMap;
     QString isServerHandledPacket(PacketTypeEnum pt);
     QString isParticipantHandledPacket(PacketTypeEnum pt);
 signals:

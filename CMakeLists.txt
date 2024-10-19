@@ -28,6 +28,7 @@ add_executable(checkers_backend
   validatorpawn.h validatorpawn.cpp
   validatordame.h validatordame.cpp
   useablepiecefinder.h useablepiecefinder.cpp
+  ToastTypeEnum.h
 )
 
 target_link_libraries(checkers_backend Qt${QT_VERSION_MAJOR}::Core Qt6::Network)

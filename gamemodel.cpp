@@ -33,6 +33,8 @@ void GameModel::restartGame()
 void GameModel::passStepForward(QString step)
 {
     if(state == GameState::FINISHED) return;
+    if(step == "") return;
+
     QStringList stepDissasembled = step.split('-');
     if(stepDissasembled.length() == 1){
         stepDissasembled = step.split('x');

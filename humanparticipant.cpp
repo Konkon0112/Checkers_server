@@ -57,6 +57,19 @@ bool HumanParticipant::usingThisSocket(QTcpSocket* soc)
     return soc == socket;
 }
 
+void HumanParticipant::sendNotification(ToastTypeEnum tt, QString msg)
+{
+    QString ttStr = ptKeeper->enumToStringToastType(tt);
+
+    QByteArray message;
+
+    message.append(ttStr.toUtf8());
+    message.append(ptKeeper->getPacketSeparator());
+    message.append(msg.toUtf8());
+
+    sendMessage(message);
+}
+
 
 void HumanParticipant::handlingReadyReadSlot()
 {

@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QTcpSocket>
+#include "ToastTypeEnum.h"
 
 class PacketTypeKeeperService;
 
@@ -33,6 +34,7 @@ public:
     ParticipantSideEnum getPSide() const;
 
     virtual bool usingThisSocket(QTcpSocket* soc) = 0;
+    virtual void sendNotification(ToastTypeEnum tt, QString msg) = 0;
 
 protected:
     PacketTypeKeeperService* ptKeeper;

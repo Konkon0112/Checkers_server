@@ -32,6 +32,10 @@ PacketTypeKeeperService::PacketTypeKeeperService(QObject *parent)
 
     pieceColorMap.insert(Participant::ParticipantSideEnum::DARK, "DARK");
     pieceColorMap.insert(Participant::ParticipantSideEnum::LIGHT, "LIGHT");
+
+    toastTypeMap.insert(ToastTypeEnum::ERROR, "ERROR");
+    toastTypeMap.insert(ToastTypeEnum::INFO, "INFO");
+    toastTypeMap.insert(ToastTypeEnum::WARNING, "WARNING");
 }
 
 QString PacketTypeKeeperService::enumToStringPacketType(PacketTypeEnum pT)
@@ -58,6 +62,19 @@ Participant::ParticipantSideEnum PacketTypeKeeperService::stringToEnumPieceColor
         if(it.value() == pCInString) return it.key();
     }
     return Participant::ParticipantSideEnum::NONE;
+}
+
+QString PacketTypeKeeperService::enumToStringToastType(ToastTypeEnum t)
+{
+    return toastTypeMap[t];
+}
+
+ToastTypeEnum PacketTypeKeeperService::stringToEnumToastType(QString tInString)
+{
+    for (auto it = toastTypeMap.constBegin(); it != toastTypeMap.constEnd(); ++it) {
+        if(it.value() == tInString) return it.key();
+    }
+    return ToastTypeEnum::NONE;
 }
 /**
  * @brief Finds out if the received packet should be handled by the server.

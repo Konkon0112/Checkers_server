@@ -19,6 +19,11 @@ bool RobotParticipant::usingThisSocket(QTcpSocket *soc)
     return false;
 }
 
+void RobotParticipant::sendNotification(ToastTypeEnum tt, QString msg)
+{
+    qDebug() << msg;
+}
+
 void RobotParticipant::gameStartedSlot(Participant::ParticipantSideEnum nextOnTurn, QString stepsSoFar)
 {
     executeJoinedSteps(stepsSoFar);

@@ -20,6 +20,7 @@ public:
 
     QTcpSocket *getSocket() const;
     bool usingThisSocket(QTcpSocket* soc) override;
+    void sendNotification(ToastTypeEnum tt, QString msg) override;
 
 private:
     void sendMessage(QByteArray message);

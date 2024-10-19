@@ -8,6 +8,7 @@
 #include "participant.h"
 #include "board.h"
 #include "validatorbase.h"
+#include "ToastTypeEnum.h"
 
 class RobotParticipant : public Participant
 {
@@ -15,6 +16,7 @@ class RobotParticipant : public Participant
 public:
     explicit RobotParticipant(ParticipantSideEnum pS , QObject *parent = nullptr);
     bool usingThisSocket(QTcpSocket* soc) override;
+    void sendNotification(ToastTypeEnum tt, QString msg) override;
 
 signals:
 
