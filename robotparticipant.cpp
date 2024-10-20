@@ -5,6 +5,7 @@
 #include "robotparticipant.h"
 #include "validatordame.h"
 #include "validatorpawn.h"
+#include "robotstepcalculator.h"
 
 RobotParticipant::RobotParticipant(ParticipantSideEnum pS, QObject *parent)
     : Participant{ParticipantTypeEnum::PLAYER, pS, parent}
@@ -31,41 +32,19 @@ void RobotParticipant::gameStartedSlot(Participant::ParticipantSideEnum nextOnTu
     if(isPlayerSide(nextOnTurn)) makeNextStep();
 }
 
+void RobotParticipant::stepCalculationDoneSlot(QString step)
+{
+    emit stepInitiatedSignal(step);
+}
+
 void RobotParticipant::makeNextStep()
 {
-    QString activeBoard = board->getActiveBoard();
-    QStringList possibleNormalSteps;
-    QStringList possibleTakingSteps;
+    RobotStepCalculator* stepCalculator = new RobotStepCalculator(board->getActiveBoard(), pSide);
+    stepCalculator->setAutoDelete(true);
+    connect(stepCalculator, SIGNAL(stepCalculated(QString)),
+            this, SLOT(stepCalculationDoneSlot(QString)), Qt::QueuedConnection);
 
-    for(int i = 0; i < activeBoard.length(); i++){
-        if(activeBoard[i] == 'x') continue;
-
-        Participant::ParticipantSideEnum charSide = activeBoard[i].isLower()?
-            Participant::ParticipantSideEnum::DARK:
-            Participant::ParticipantSideEnum::LIGHT;
-        bool isRobotPiece = isPlayerSide(charSide);
-        if(!isRobotPiece) continue;
-
-        ValidatorBase* val = findValidator(activeBoard[i]);
-        if(!val) continue;
-        QSet<QString> posStepSet = val->getValidIndecies(i, activeBoard);
-
-        for (auto i = posStepSet.cbegin(), end = posStepSet.cend(); i != end; ++i){
-            QString stepValue = *i;
-            if(stepValue.contains('x')){
-                possibleTakingSteps.append(stepValue);
-            } else {
-                possibleNormalSteps.append(stepValue);
-            }
-        }
-    }
-    QStringList finalList = possibleTakingSteps.length() == 0?
-                                possibleNormalSteps : possibleTakingSteps;
-
-    // Step randomly for now
-    int stepInd = QRandomGenerator::global()->bounded(finalList.length());
-    emit stepInitiatedSignal(finalList[stepInd]);
-    lastStepMade = finalList[stepInd];
+    pool->start(stepCalculator);
 }
 
 void RobotParticipant::makeChainedStep(QString lastStep)

@@ -76,11 +76,7 @@ ToastTypeEnum PacketTypeKeeperService::stringToEnumToastType(QString tInString)
     }
     return ToastTypeEnum::NONE;
 }
-/**
- * @brief Finds out if the received packet should be handled by the server.
- *
- * @return The corresponding enum in QString if it should not be handled by the server then returns "".
- */
+
 QString PacketTypeKeeperService::shouldServerHandle(QString packet)
 {
     for(int i = 0; i < serverList.size(); i++){
@@ -90,11 +86,6 @@ QString PacketTypeKeeperService::shouldServerHandle(QString packet)
     return "";
 }
 
-/**
- * @brief Finds out if the received packet should be handled by the participant object.
- *
- * @return The corresponding enum in QString if it should not be handled by the participant object then returns "".
- */
 QString PacketTypeKeeperService::shouldParticipantHandle(QString packet)
 {
     for(int i = 0; i < participantList.size(); i++){

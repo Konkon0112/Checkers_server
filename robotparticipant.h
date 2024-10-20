@@ -29,6 +29,9 @@ public slots:
 protected slots:
     void gameStartedSlot(Participant::ParticipantSideEnum nextOnTurn, QString stepsSoFar) override;
 
+private slots:
+    void stepCalculationDoneSlot(QString step);
+
 private:
     void makeNextStep();
     void makeChainedStep(QString lastStep);

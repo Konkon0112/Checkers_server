@@ -39,7 +39,17 @@ public:
     QString enumToStringToastType(ToastTypeEnum t);
     ToastTypeEnum stringToEnumToastType(QString tInString);
 
+    /**
+    * @brief Finds out if the received packet should be handled by the server.
+    *
+    * @return The corresponding enum in QString if it should not be handled by the server then returns "".
+    */
     QString shouldServerHandle(QString packet);
+    /**
+    * @brief Finds out if the received packet should be handled by the participant object.
+    *
+    * @return The corresponding enum in QString if it should not be handled by the participant object then returns "".
+    */
     QString shouldParticipantHandle(QString packet);
 
     QByteArray getPacketSeparator();

@@ -31,6 +31,9 @@ add_executable(checkers_backend
   ToastTypeEnum.h
   positionevaluator.h positionevaluator.cpp
   robotstepcalculator.h robotstepcalculator.cpp
+  evaluatorbase.h evaluatorbase.cpp
+  evaluatorpawn.h evaluatorpawn.cpp
+  evaluatordame.h evaluatordame.cpp
 )
 
 target_link_libraries(checkers_backend Qt${QT_VERSION_MAJOR}::Core Qt6::Network)

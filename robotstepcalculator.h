@@ -6,6 +6,7 @@
 #include <QString>
 #include <QList>
 #include <QSet>
+#include <QPair>
 
 #include "participant.h"
 #include "validatorbase.h"
@@ -25,15 +26,20 @@ public:
 
 private:
 
+
     QString makeMoveOnBoard(QString board, QString step);
-    int minimax(QString board, int depth, int& alpha, int& beta, bool isMaxPlayer);
-    int maxVal(int x, int y);
-    int minVal(int x, int y);
+    QPair<float, QString> minimax(QString board, QString lastStep, int depth, QPair<float, QString>& alpha, QPair<float, QString>& beta, bool isMaxPlayer);
+    QPair<float, QString> maxVal(QPair<float, QString> x, QPair<float, QString> y);
+    QPair<float, QString> minVal(QPair<float, QString> x, QPair<float, QString> y);
+    ValidatorBase* getValidator(QChar square);
+    QList<QString> getAllPossibleSteps(QString board, bool isMaxPlayer);
+    bool isChainedPossible(QString lastStep, QString board);
 
     bool isMaximizingPlayer;
     QString board;
-    const int searchDepth = 4;
+    const int searchDepth = 3;
     PositionEvaluator* evaluator;
+    QList<ValidatorBase*> validators;
 };
 
 #endif // ROBOTSTEPCALCULATOR_H

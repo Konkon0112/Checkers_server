@@ -3,20 +3,25 @@
 
 #include <QObject>
 #include <QString>
+#include <QList>
+
 #include "board.h"
+#include "evaluatorbase.h"
 
 class PositionEvaluator : public QObject
 {
     Q_OBJECT
 public:
     explicit PositionEvaluator(QObject *parent = nullptr);
+    float evaluatePosition(QString board, QString lastStep);
 
 signals:
 
 private:
-    int evaluatePosition(QString board);
+    EvaluatorBase *findEvaluator(QChar ch);
 
     Board* board;
+    QList<EvaluatorBase*> evaluators;
 };
 
 #endif // POSITIONEVALUATOR_H
