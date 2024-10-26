@@ -1,6 +1,8 @@
 #include "gamemodel.h"
 #include "validatorpawn.h"
 #include "validatordame.h"
+#include "customexception.h"
+#include "ToastTypeEnum.h"
 
 GameModel::GameModel(QObject *parent)
     : QObject{parent}
@@ -32,8 +34,8 @@ void GameModel::restartGame()
 
 void GameModel::passStepForward(QString step)
 {
-    if(state == GameState::FINISHED) return;
-    if(step == "") return;
+    if(state == GameState::FINISHED) throw new CustomException("The game is already finished.", ToastTypeEnum::ERROR);
+    if(step == "") throw new CustomException("A step must do something.", ToastTypeEnum::WARNING);
 
     QStringList stepDissasembled = step.split('-');
     if(stepDissasembled.length() == 1){
@@ -43,62 +45,64 @@ void GameModel::passStepForward(QString step)
     int to = stepDissasembled[1].toInt();
     QChar charAtInd = board->charAtIndex(from);
 
-    if(charAtInd == 'x') return;
-    if(colorOnTurn == Participant::ParticipantSideEnum::LIGHT && charAtInd.isLower()) return;
-    if(colorOnTurn == Participant::ParticipantSideEnum::DARK && charAtInd.isUpper()) return;
+    if(charAtInd == 'x') throw new CustomException("Empty square selected.", ToastTypeEnum::WARNING);
+    if(colorOnTurn == Participant::ParticipantSideEnum::LIGHT && charAtInd.isLower()) throw new CustomException("Not your piece.", ToastTypeEnum::WARNING);
+    if(colorOnTurn == Participant::ParticipantSideEnum::DARK && charAtInd.isUpper()) throw new CustomException("Not your piece.", ToastTypeEnum::WARNING);
 
+    ValidatorBase* validator = nullptr;
     for(int i = 0; i < validators.size(); i++){
-        if(validators.at(i)->isValidatorsResponsibility(board->charAtIndex(from))){
-
-            if((useablePieces.contains(from) &&
-                    validators.at(i)->isValidStep(step, board->getActiveBoard())) ||
-                    state == GameState::UNDER_STEUP){
-
-                // The order of these two matters!
-                addStepToList(step);
-                board->executeStep(step);
-
-                // check for turn change
-                Participant::ParticipantSideEnum newTurn =
-                    colorOnTurn == Participant::ParticipantSideEnum::DARK?
-                        Participant::ParticipantSideEnum::LIGHT: Participant::ParticipantSideEnum::DARK;
-
-                bool isGameOver = checkIfGameOver(newTurn);
-                if(isGameOver) return;
-                Participant::ParticipantSideEnum nextColor;
-
-                if(step.contains('x')){
-                    QSet<QString> possibleSteps = validators.at(i)->getValidIndecies(to, board->getActiveBoard());
-
-                    if(possibleSteps.empty()){ // If piece can't step after take
-                        nextColor = newTurn;
-                        completeTasksOnTurnChange(newTurn);
-
-                    } else {
-                        QString firstPos = *possibleSteps.begin();
-
-                        // If a piece can capture, then it has to capture
-                        // So if one contains '-' that means all of the steps are normal steps
-                        if(firstPos.contains('-')){
-                            nextColor = newTurn;
-                            completeTasksOnTurnChange(newTurn);
-
-                        } else { //It can perform chained capture
-                            updateUseablePieces(to);
-                            nextColor = colorOnTurn;
-                        }
-                    }
-
-
-                } else { // If the last move was not capture
-                    nextColor = newTurn;
-                    completeTasksOnTurnChange(newTurn);
-                }
-                if(state == GameState::ACTIVE) emit stepHappenedSignal(step, nextColor);
-            }
+        if(validators.at(i)->isValidatorsResponsibility(board->charAtIndex(from))) {
+            validator = validators[i];
             break;
         }
     }
+
+    if(!validator) throw new CustomException("No validator found.", ToastTypeEnum::ERROR);
+    if(!useablePieces.contains(from)) throw new CustomException("You cannot step with this piece.", ToastTypeEnum::WARNING);
+    if(!validator->isValidStep(step, board->getActiveBoard())) throw new CustomException("Not a valid step.", ToastTypeEnum::WARNING);
+    // The order of these two matters!
+    addStepToList(step);
+    board->executeStep(step);
+
+    // check for turn change
+    Participant::ParticipantSideEnum newTurn =
+        colorOnTurn == Participant::ParticipantSideEnum::DARK?
+            Participant::ParticipantSideEnum::LIGHT: Participant::ParticipantSideEnum::DARK;
+
+    bool isGameOver = checkIfGameOver(newTurn);
+    if(isGameOver) return;
+
+    Participant::ParticipantSideEnum nextColor;
+
+    if(step.contains('x')){
+        QSet<QString> possibleSteps = validator->getValidIndecies(to, board->getActiveBoard());
+
+        if(possibleSteps.empty()){ // If piece can't step after take
+            nextColor = newTurn;
+            completeTasksOnTurnChange(newTurn);
+
+        } else {
+            QString firstPos = *possibleSteps.begin();
+
+            // If a piece can capture, then it has to capture
+            // So if one contains '-' that means all of the steps are normal steps
+            if(firstPos.contains('-')){
+                nextColor = newTurn;
+                completeTasksOnTurnChange(newTurn);
+
+            } else { //It can perform chained capture
+                updateUseablePieces(to);
+                nextColor = colorOnTurn;
+            }
+        }
+
+
+    } else { // If the last move was not capture
+        nextColor = newTurn;
+        completeTasksOnTurnChange(newTurn);
+    }
+    if(state == GameState::ACTIVE) emit stepHappenedSignal(step, nextColor);
+
 }
 
 void GameModel::passStepOnSetUp(QString step)

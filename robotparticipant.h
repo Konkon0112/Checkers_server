@@ -33,14 +33,12 @@ private slots:
     void stepCalculationDoneSlot(QString step);
 
 private:
-    void makeNextStep();
-    void makeChainedStep(QString lastStep);
+    void makeNextStep(QString lastStep = "");
     ValidatorBase* findValidator(QChar piece);
     void executeJoinedSteps(QString joinedSteps);
 
     Board* board;
     QList<ValidatorBase*> validators;
-    QString lastStepMade = "";
     QThreadPool* pool;
 };
 

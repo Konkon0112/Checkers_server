@@ -2,6 +2,7 @@
 
 #include "roombase.h"
 #include "humanparticipant.h"
+#include "customexception.h"
 
 RoomBase::RoomBase(RoomState rs, QObject *parent)
     : QObject{parent}
@@ -146,7 +147,11 @@ void RoomBase::stepInitiatedSlot(QString step)
         return;
     }
 
-    gameModel->passStepForward(step);
+    try {
+        gameModel->passStepForward(step);
+    } catch(CustomException* e){
+        participant->sendNotification(e->getToastType(), e->getMessage());
+    }
 }
 
 void RoomBase::undoInitiatedSlot()

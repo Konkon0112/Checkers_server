@@ -23,13 +23,14 @@ bool RobotParticipant::usingThisSocket(QTcpSocket *soc)
 
 void RobotParticipant::sendNotification(ToastTypeEnum tt, QString msg)
 {
-    qDebug() << msg;
+    qDebug() << "Robot received notification: " << msg;
 }
 
 void RobotParticipant::gameStartedSlot(Participant::ParticipantSideEnum nextOnTurn, QString stepsSoFar)
 {
     executeJoinedSteps(stepsSoFar);
-    if(isPlayerSide(nextOnTurn)) makeNextStep();
+    QStringList steps = stepsSoFar.split(';');
+    if(isPlayerSide(nextOnTurn)) makeNextStep(steps[steps.length() - 1]);
 }
 
 void RobotParticipant::stepCalculationDoneSlot(QString step)
@@ -37,47 +38,14 @@ void RobotParticipant::stepCalculationDoneSlot(QString step)
     emit stepInitiatedSignal(step);
 }
 
-void RobotParticipant::makeNextStep()
+void RobotParticipant::makeNextStep(QString lastStep)
 {
-    RobotStepCalculator* stepCalculator = new RobotStepCalculator(board->getActiveBoard(), pSide);
+    RobotStepCalculator* stepCalculator = new RobotStepCalculator(board->getActiveBoard(), pSide, lastStep);
     stepCalculator->setAutoDelete(true);
     connect(stepCalculator, SIGNAL(stepCalculated(QString)),
             this, SLOT(stepCalculationDoneSlot(QString)), Qt::QueuedConnection);
 
     pool->start(stepCalculator);
-}
-
-void RobotParticipant::makeChainedStep(QString lastStep)
-{
-    QString activeBoard = board->getActiveBoard();
-    QStringList stepDissasembled = lastStep.split('x');
-    if(stepDissasembled.length() == 0) return;
-    int to = stepDissasembled[1].toInt();
-
-    ValidatorBase* val = findValidator(activeBoard[to]);
-    if(!val) return;
-
-    QSet<QString> posStepSet = val->getValidIndecies(to, activeBoard);
-
-    QStringList possibleNormalSteps;
-    QStringList possibleTakingSteps;
-
-    for (auto i = posStepSet.cbegin(), end = posStepSet.cend(); i != end; ++i){
-        QString stepValue = *i;
-        if(stepValue.contains('x')){
-            possibleTakingSteps.append(stepValue);
-        } else {
-            possibleNormalSteps.append(stepValue);
-        }
-    }
-
-    QStringList finalList = possibleTakingSteps.length() == 0?
-                                possibleNormalSteps : possibleTakingSteps;
-
-    // Step randomly for now
-    int stepInd = QRandomGenerator::global()->bounded(finalList.length());
-    emit stepInitiatedSignal(finalList[stepInd]);
-    lastStepMade = finalList[stepInd];
 }
 
 ValidatorBase *RobotParticipant::findValidator(QChar piece)
@@ -106,10 +74,8 @@ void RobotParticipant::stepHappenedSlot(QString step, Participant::ParticipantSi
     if(step == "") return;
     board->executeStep(step);
 
-    if(newTurnColor == pSide && step == lastStepMade){
-        makeChainedStep(step);
-    } else if (newTurnColor == pSide){
-        makeNextStep();
+    if(newTurnColor == pSide){
+        makeNextStep(step);
     }
 }
 

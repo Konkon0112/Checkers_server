@@ -60,9 +60,11 @@ bool HumanParticipant::usingThisSocket(QTcpSocket* soc)
 void HumanParticipant::sendNotification(ToastTypeEnum tt, QString msg)
 {
     QString ttStr = ptKeeper->enumToStringToastType(tt);
+    QString packetType = ptKeeper->enumToStringPacketType(PacketTypeKeeperService::PacketTypeEnum::NOTIFICATION);
 
     QByteArray message;
-
+    message.append(packetType.toUtf8());
+    message.append(ptKeeper->getPacketSeparator());
     message.append(ttStr.toUtf8());
     message.append(ptKeeper->getPacketSeparator());
     message.append(msg.toUtf8());

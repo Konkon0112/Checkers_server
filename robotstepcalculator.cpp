@@ -77,7 +77,7 @@ QString RobotStepCalculator::makeMoveOnBoard(QString board, QString step)
 
 QPair<float, QString> RobotStepCalculator::minimax(QString board, QString lastStep, int depth, QPair<float, QString> &alpha, QPair<float, QString> &beta, bool isMaxPlayer)
 {
-    QList<QString> possibleSteps = getAllPossibleSteps(board, isMaxPlayer);
+    QList<QString> possibleSteps = getAllPossibleSteps(board, isMaxPlayer, lastStep);
     if(possibleSteps.length() == 0){
         // Depending on max step was made by whom change value
         QPair<float, QString> res;
@@ -96,7 +96,7 @@ QPair<float, QString> RobotStepCalculator::minimax(QString board, QString lastSt
     if(isMaxPlayer){
         QPair<float, QString> maxEval;
         maxEval.first = std::numeric_limits<float>::min();
-        maxEval.second = lastStep;
+        maxEval.second = "";
         for(int i = 0; i < possibleSteps.length(); i++){
 
             QString newPos = makeMoveOnBoard(board, possibleSteps[i]);
@@ -118,7 +118,7 @@ QPair<float, QString> RobotStepCalculator::minimax(QString board, QString lastSt
     } else {
         QPair<float, QString> minEval;
         minEval.first = std::numeric_limits<float>::max();
-        minEval.second = lastStep;
+        minEval.second = "";
         for(int i = 0; i < possibleSteps.length(); i++){
             QString newPos = makeMoveOnBoard(board, possibleSteps[i]);
             bool isChained = isChainedPossible(possibleSteps[i], newPos);
@@ -154,10 +154,35 @@ ValidatorBase *RobotStepCalculator::getValidator(QChar square)
     return nullptr;
 }
 
-QList<QString> RobotStepCalculator::getAllPossibleSteps(QString board, bool isMaxPlayer)
+QList<QString> RobotStepCalculator::getAllPossibleSteps(QString board, bool isMaxPlayer, QString lastStep)
 {
     QList<QString> normalSteps;
     QList<QString> pieceTakingSteps;
+
+    if(lastStep.contains('x')){
+        QStringList lastStepDissasembled = lastStep.split('x');
+        int to = lastStepDissasembled[1].toInt();
+        bool isSamePlayer = (isMaxPlayer && board[to].isUpper()) ||
+                            (!isMaxPlayer && board[to].isLower());
+        if(isSamePlayer){
+            ValidatorBase* validator = getValidator(board[to]);
+            if(!validator) normalSteps; // empty
+
+            QSet<QString> pSteps = validator->getValidIndecies(to, board);
+
+            for (auto i = pSteps.cbegin(), end = pSteps.cend(); i != end; ++i){
+                QString stepValue = *i;
+                if(stepValue.contains('x')){
+                    pieceTakingSteps.append(stepValue);
+                } else {
+                    normalSteps.append(stepValue);
+                }
+            }
+
+            return pieceTakingSteps.length() == 0? normalSteps:pieceTakingSteps;
+        }
+    }
+
 
     for(int i = 0; i < board.length(); i++){
 

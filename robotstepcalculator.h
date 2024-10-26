@@ -32,7 +32,7 @@ private:
     QPair<float, QString> maxVal(QPair<float, QString> x, QPair<float, QString> y);
     QPair<float, QString> minVal(QPair<float, QString> x, QPair<float, QString> y);
     ValidatorBase* getValidator(QChar square);
-    QList<QString> getAllPossibleSteps(QString board, bool isMaxPlayer);
+    QList<QString> getAllPossibleSteps(QString board, bool isMaxPlayer, QString lastStep);
     bool isChainedPossible(QString lastStep, QString board);
 
     bool isMaximizingPlayer;
