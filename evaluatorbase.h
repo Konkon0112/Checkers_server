@@ -3,12 +3,14 @@
 
 #include <QObject>
 #include <QChar>
+#include <QList>
+#include "validatorbase.h"
 
 class EvaluatorBase : public QObject
 {
     Q_OBJECT
 public:
-    explicit EvaluatorBase(QChar lightCh, QChar darkCh, float baseV, QObject *parent = nullptr);
+    explicit EvaluatorBase(QChar lightCh, QChar darkCh, float baseV, int validatorInd, QObject *parent = nullptr);
 
     /**
     * @brief User should check if the piece is this evaluator's responsibility.
@@ -20,8 +22,17 @@ public:
 signals:
 
 protected:
-    float baseVal;
+    ValidatorBase* findValidator(QChar ch);
+    float underAttackBonus(int ind, QString board, QString lastStep);
+    int getIndOfTarget(int from, int to);
+    bool isOppositeTeam(QChar p1, QChar p2);
+    bool isPawn(QChar p);
+    bool isDame(QChar p);
 
+    float baseVal;
+    int valIndex;
+
+    QList<ValidatorBase*> validators;
 private:
     QChar lightChar;
     QChar darkChar;

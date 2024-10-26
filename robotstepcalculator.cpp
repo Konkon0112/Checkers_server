@@ -5,7 +5,7 @@
 #include "validatordame.h"
 #include "validatorpawn.h"
 
-RobotStepCalculator::RobotStepCalculator(QString board, Participant::ParticipantSideEnum robotS, QObject *parent)
+RobotStepCalculator::RobotStepCalculator(QString board, Participant::ParticipantSideEnum robotS, QString lStep, QObject *parent)
 : QObject{parent}
 {
     isMaximizingPlayer = robotS == Participant::ParticipantSideEnum::LIGHT;
@@ -13,6 +13,7 @@ RobotStepCalculator::RobotStepCalculator(QString board, Participant::Participant
     evaluator = new PositionEvaluator(this);
     validators.append(new ValidatorDame(this));
     validators.append(new ValidatorPawn(this));
+    lastStep = lStep;
 }
 
 void RobotStepCalculator::run()
@@ -22,7 +23,7 @@ void RobotStepCalculator::run()
     QPair<float, QString> dummyBeta(std::numeric_limits<float>::max(), "");
 
     QPair<float, QString> res = minimax(board,
-                                        "",
+                                        lastStep,
                                         searchDepth,
                                         dummyAlpha,
                                         dummyBeta,

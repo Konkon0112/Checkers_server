@@ -17,7 +17,7 @@ class RobotStepCalculator : public QObject, public QRunnable
 {
     Q_OBJECT
 public:
-    explicit RobotStepCalculator(QString board, Participant::ParticipantSideEnum robotS, QObject *parent = nullptr);
+    explicit RobotStepCalculator(QString board, Participant::ParticipantSideEnum robotS, QString lStep = "", QObject *parent = nullptr);
 
 signals:
     void stepCalculated(QString step);
@@ -40,6 +40,7 @@ private:
     const int searchDepth = 3;
     PositionEvaluator* evaluator;
     QList<ValidatorBase*> validators;
+    QString lastStep;
 };
 
 #endif // ROBOTSTEPCALCULATOR_H

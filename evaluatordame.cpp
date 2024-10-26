@@ -2,10 +2,8 @@
 #include "evaluatordame.h"
 
 EvaluatorDame::EvaluatorDame(QObject *parent)
-    : EvaluatorBase{'D', 'd', 3, parent}
-{
-    dameValidator = new ValidatorDame(this);
-}
+    : EvaluatorBase{'D', 'd', 3, 1, parent}
+{}
 
 float EvaluatorDame::evaluatePiece(int ind, QString board, QString lastStep)
 {
@@ -14,6 +12,7 @@ float EvaluatorDame::evaluatePiece(int ind, QString board, QString lastStep)
 
     result += addEdgeOfBoardBonus(ind);
     result += addNumOfTargetBonus(ind, board, lastStep);
+    result += underAttackBonus(ind, board, lastStep);
 
     return isDark? -result : result;
 }
@@ -41,7 +40,7 @@ float EvaluatorDame::addNumOfTargetBonus(int ind, QString board, QString lastSte
         isChained = false;
     }
 
-    QSet<QString> pSteps = dameValidator->getValidIndecies(ind, board);
+    QSet<QString> pSteps = validators[valIndex]->getValidIndecies(ind, board);
     for (auto i = pSteps.cbegin(), end = pSteps.cend(); i != end; ++i){
         QString stepValue = *i;
 
@@ -72,23 +71,4 @@ float EvaluatorDame::addNumOfTargetBonus(int ind, QString board, QString lastSte
     }
 
     return res;
-}
-
-int EvaluatorDame::getIndOfTarget(int from, int to)
-{
-    int sX = from / 8;
-    int sY = from % 8;
-    int tX = to / 8;
-    int tY = to % 8;
-
-    int dX = sX - tX;
-    int dY = sY - tY;
-
-    dX = dX / qFabs<int>(dX);
-    dY = dY / qFabs<int>(dY);
-
-    tX = tX + dX;
-    tY = tY + dY;
-
-    return tX * 8 + tY;
 }

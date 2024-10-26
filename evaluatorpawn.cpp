@@ -1,10 +1,8 @@
 #include "evaluatorpawn.h"
 
 EvaluatorPawn::EvaluatorPawn(QObject *parent)
-    : EvaluatorBase{'P', 'p', 1, parent}
-{
-    pawnValidator = new ValidatorPawn(this);
-}
+    : EvaluatorBase{'P', 'p', 1, 0, parent}
+{}
 
 float EvaluatorPawn::evaluatePiece(int ind, QString board, QString lastStep)
 {
@@ -16,6 +14,7 @@ float EvaluatorPawn::evaluatePiece(int ind, QString board, QString lastStep)
     float sRowBonus = 0;
     float tRowBonus = 0;
 
+    // A pawn if made it to the last line it becomes a dame
     if(isDark){
         if(y == 5) sRowBonus += 0.5;
         if(y == 6) tRowBonus += 1;
@@ -24,31 +23,9 @@ float EvaluatorPawn::evaluatePiece(int ind, QString board, QString lastStep)
         if(y == 1) tRowBonus += 1;
     }
 
-    float beingAttackedDanger = subAttackDanger(ind, board, lastStep);
+    float beingAttackedDanger = underAttackBonus(ind, board, lastStep);
 
     base = base + sRowBonus + tRowBonus + beingAttackedDanger;
 
     return isDark? -base : base;
-}
-
-float EvaluatorPawn::subAttackDanger(int ind, QString board, QString lastStep)
-{
-    QStringList sl = lastStep.split('-');
-    if(sl.length() == 1){
-        sl = lastStep.split('x');
-    }
-    int to = sl[1].toInt();
-    QSet<QString> pSteps = pawnValidator->getValidIndecies(ind, board);
-    if (pSteps.isEmpty()){
-        // TODO: still can be taken by opponent pawn.
-        return 0;
-    }
-
-    QString firstStepVal = *pSteps.cbegin();
-
-    if(firstStepVal.contains('x')){ // It can take AND can be taken
-        if(ind == to){ // Last step was made with this pawn -> chained attack possible
-            return 1;
-    }
-    return 0;
 }

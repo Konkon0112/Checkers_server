@@ -4,7 +4,6 @@
 #include <QObject>
 
 #include "evaluatorbase.h"
-#include "validatordame.h"
 
 class EvaluatorDame : public EvaluatorBase
 {
@@ -18,12 +17,11 @@ signals:
 public:
     float evaluatePiece(int ind, QString board, QString lastStep);
 
+
+
 private:
     float addEdgeOfBoardBonus(int ind);
     float addNumOfTargetBonus(int ind, QString board, QString lastStep);
-    int getIndOfTarget(int from, int to);
-
-    ValidatorDame* dameValidator;
 };
 
 #endif // EVALUATORDAME_H

@@ -107,7 +107,6 @@ void RobotParticipant::stepHappenedSlot(QString step, Participant::ParticipantSi
     board->executeStep(step);
 
     if(newTurnColor == pSide && step == lastStepMade){
-        qInfo() << "chained";
         makeChainedStep(step);
     } else if (newTurnColor == pSide){
         makeNextStep();
