@@ -37,7 +37,7 @@ private:
 
     bool isMaximizingPlayer;
     QString board;
-    const int searchDepth = 3;
+    const int searchDepth = 4;
     PositionEvaluator* evaluator;
     QList<ValidatorBase*> validators;
     QString lastStep;
