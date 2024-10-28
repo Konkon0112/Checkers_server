@@ -23,7 +23,7 @@ signals:
 
 protected:
     ValidatorBase* findValidator(QChar ch);
-    float underAttackBonus(int ind, QString board, QString lastStep);
+    float underAttackSubBonus(int ind, QString board, QString lastStep);
     int getIndOfTarget(int from, int to);
     bool isOppositeTeam(QChar p1, QChar p2);
     bool isPawn(QChar p);

@@ -21,7 +21,7 @@ bool RobotParticipant::usingThisSocket(QTcpSocket *soc)
     return false;
 }
 
-void RobotParticipant::sendNotification(ToastTypeEnum tt, QString msg)
+void RobotParticipant::receiveNotification(ToastTypeEnum tt, QString msg)
 {
     qDebug() << "Robot received notification: " << msg;
 }
@@ -30,11 +30,13 @@ void RobotParticipant::gameStartedSlot(Participant::ParticipantSideEnum nextOnTu
 {
     executeJoinedSteps(stepsSoFar);
     QStringList steps = stepsSoFar.split(';');
-    if(isPlayerSide(nextOnTurn)) makeNextStep(steps[steps.length() - 1]);
+    QString lastStep = steps[steps.length() - 1];
+    if(isPlayerSide(nextOnTurn)) makeNextStep(lastStep);
 }
 
 void RobotParticipant::stepCalculationDoneSlot(QString step)
 {
+    lastStepByRobot = step;
     emit stepInitiatedSignal(step);
 }
 
@@ -90,6 +92,8 @@ void RobotParticipant::undoHappenedSlot(QString newStepsSoFar, Participant::Part
     board->restartBoard();
     executeJoinedSteps(newStepsSoFar);
     if(pSide == nextC){
-        makeNextStep();
+        QStringList steps = newStepsSoFar.split(';');
+        QString lastStep = steps[steps.length() - 1];
+        makeNextStep(lastStep);
     }
 }

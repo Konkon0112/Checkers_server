@@ -17,7 +17,7 @@ class RobotParticipant : public Participant
 public:
     explicit RobotParticipant(ParticipantSideEnum pS , QObject *parent = nullptr);
     bool usingThisSocket(QTcpSocket* soc) override;
-    void sendNotification(ToastTypeEnum tt, QString msg) override;
+    void receiveNotification(ToastTypeEnum tt, QString msg) override;
 
 signals:
 
@@ -40,6 +40,7 @@ private:
     Board* board;
     QList<ValidatorBase*> validators;
     QThreadPool* pool;
+    QString lastStepByRobot = "";
 };
 
 #endif // ROBOTPARTICIPANT_H

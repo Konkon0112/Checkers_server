@@ -139,18 +139,18 @@ void RoomBase::stepInitiatedSlot(QString step)
     QObject* signalSender = sender();
     Participant* participant = qobject_cast<Participant*>(signalSender);
     if(participant->isPlayerSide(Participant::ParticipantSideEnum::NONE)){
-        participant->sendNotification(ToastTypeEnum::WARNING, "Spectators cannot initiate moves!");
+        participant->receiveNotification(ToastTypeEnum::WARNING, "Spectators cannot initiate moves!");
         return;
     }
     if(!participant->isPlayerSide(gameModel->getColorOnTurn())){
-        participant->sendNotification(ToastTypeEnum::WARNING, "It is not your turn to move yet!");
+        participant->receiveNotification(ToastTypeEnum::WARNING, "It is not your turn to move yet!");
         return;
     }
 
     try {
         gameModel->passStepForward(step);
     } catch(CustomException* e){
-        participant->sendNotification(e->getToastType(), e->getMessage());
+        participant->receiveNotification(e->getToastType(), e->getMessage());
     }
 }
 
@@ -160,7 +160,7 @@ void RoomBase::undoInitiatedSlot()
     Participant* participant = qobject_cast<Participant*>(signalSender);
 
     if(undoInitiatedBy != Participant::ParticipantSideEnum::NONE){
-        participant->sendNotification(ToastTypeEnum::WARNING, "There is an active undo request.");
+        participant->receiveNotification(ToastTypeEnum::WARNING, "There is an active undo request.");
         return;
     }
 
@@ -189,7 +189,7 @@ void RoomBase::approveUndoSlot()
             Participant::ParticipantSideEnum::LIGHT : Participant::ParticipantSideEnum::DARK;
 
     if(participant->getPSide() != approvingSide){
-        participant->sendNotification(ToastTypeEnum::WARNING, "You cannot approve this undo request!");
+        participant->receiveNotification(ToastTypeEnum::WARNING, "You cannot approve this undo request!");
         return;
     }
     gameModel->undoStep(undoInitiatedBy);
@@ -208,7 +208,7 @@ void RoomBase::rejectUndoSlot()
             Participant::ParticipantSideEnum::LIGHT : Participant::ParticipantSideEnum::DARK;
 
     if(participant->getPSide() != approvingSide){
-        participant->sendNotification(ToastTypeEnum::WARNING, "You cannot reject this undo request!");
+        participant->receiveNotification(ToastTypeEnum::WARNING, "You cannot reject this undo request!");
         return;
     }
 

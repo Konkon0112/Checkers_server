@@ -6,6 +6,7 @@ EvaluatorPawn::EvaluatorPawn(QObject *parent)
 
 float EvaluatorPawn::evaluatePiece(int ind, QString board, QString lastStep)
 {
+    if(board[ind] == 'x') return 0;
     float base = baseVal;
     bool isDark = board[ind].isLower();
 
@@ -23,7 +24,7 @@ float EvaluatorPawn::evaluatePiece(int ind, QString board, QString lastStep)
         if(y == 1) tRowBonus += 1;
     }
 
-    float beingAttackedDanger = underAttackBonus(ind, board, lastStep);
+    float beingAttackedDanger = underAttackSubBonus(ind, board, lastStep);
 
     base = base + sRowBonus + tRowBonus + beingAttackedDanger;
 

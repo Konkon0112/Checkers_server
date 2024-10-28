@@ -12,7 +12,7 @@ float EvaluatorDame::evaluatePiece(int ind, QString board, QString lastStep)
 
     result += addEdgeOfBoardBonus(ind);
     result += addNumOfTargetBonus(ind, board, lastStep);
-    result += underAttackBonus(ind, board, lastStep);
+    result += underAttackSubBonus(ind, board, lastStep);
 
     return isDark? -result : result;
 }

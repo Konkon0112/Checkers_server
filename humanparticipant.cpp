@@ -57,7 +57,7 @@ bool HumanParticipant::usingThisSocket(QTcpSocket* soc)
     return soc == socket;
 }
 
-void HumanParticipant::sendNotification(ToastTypeEnum tt, QString msg)
+void HumanParticipant::receiveNotification(ToastTypeEnum tt, QString msg)
 {
     QString ttStr = ptKeeper->enumToStringToastType(tt);
     QString packetType = ptKeeper->enumToStringPacketType(PacketTypeKeeperService::PacketTypeEnum::NOTIFICATION);

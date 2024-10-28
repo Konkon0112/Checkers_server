@@ -78,7 +78,9 @@ QString RobotStepCalculator::makeMoveOnBoard(QString board, QString step)
 QPair<float, QString> RobotStepCalculator::minimax(QString board, QString lastStep, int depth, QPair<float, QString> &alpha, QPair<float, QString> &beta, bool isMaxPlayer)
 {
     QList<QString> possibleSteps = getAllPossibleSteps(board, isMaxPlayer, lastStep);
-    if(possibleSteps.length() == 0){
+    float currentPosValue = evaluator->evaluatePosition(board, lastStep);
+
+    if(possibleSteps.length() == 0){ // Game over for the next player
         // Depending on max step was made by whom change value
         QPair<float, QString> res;
         res.first = isMaxPlayer? std::numeric_limits<float>::min() : std::numeric_limits<float>::max();
@@ -87,7 +89,7 @@ QPair<float, QString> RobotStepCalculator::minimax(QString board, QString lastSt
     }
     if(depth == 0){ //Reached max depth
         QPair<float, QString> res;
-        res.first = evaluator->evaluatePosition(board, lastStep);
+        res.first = currentPosValue;
         res.second = lastStep;
         return res;
     }
@@ -96,14 +98,14 @@ QPair<float, QString> RobotStepCalculator::minimax(QString board, QString lastSt
     if(isMaxPlayer){
         QPair<float, QString> maxEval;
         maxEval.first = std::numeric_limits<float>::min();
-        maxEval.second = "";
+        maxEval.second = lastStep;
         for(int i = 0; i < possibleSteps.length(); i++){
 
             QString newPos = makeMoveOnBoard(board, possibleSteps[i]);
-            bool isChained = isChainedPossible(possibleSteps[i], newPos);
+            bool isChainingPosible = isChainedPossible(possibleSteps[i], newPos);
 
             QPair<float, QString> eval;
-            if(isChained){
+            if(isChainingPosible){
                 eval = minimax(newPos, possibleSteps[i], depth -1, alpha, beta, isMaxPlayer);
             } else {
                 eval = minimax(newPos, possibleSteps[i], depth -1, alpha, beta, !isMaxPlayer);
@@ -114,17 +116,18 @@ QPair<float, QString> RobotStepCalculator::minimax(QString board, QString lastSt
                 break;
             }
         }
+        if(depth != searchDepth) maxEval.second = lastStep;
         return maxEval;
     } else {
         QPair<float, QString> minEval;
         minEval.first = std::numeric_limits<float>::max();
-        minEval.second = "";
+        minEval.second = lastStep;
         for(int i = 0; i < possibleSteps.length(); i++){
             QString newPos = makeMoveOnBoard(board, possibleSteps[i]);
-            bool isChained = isChainedPossible(possibleSteps[i], newPos);
+            bool isChainingPosible = isChainedPossible(possibleSteps[i], newPos);
 
             QPair<float, QString> eval;
-            if(isChained){
+            if(isChainingPosible){
                 eval = minimax(newPos, possibleSteps[i], depth -1, alpha, beta, isMaxPlayer);
             } else {
                 eval = minimax(newPos, possibleSteps[i], depth -1, alpha, beta, !isMaxPlayer);
@@ -132,6 +135,8 @@ QPair<float, QString> RobotStepCalculator::minimax(QString board, QString lastSt
             minEval = minVal(minEval, eval);
             beta = minVal(beta, eval);
         }
+        if(depth != searchDepth) minEval.second = lastStep;
+
         return minEval;
     }
 }
