@@ -24,7 +24,7 @@ float EvaluatorDame::addEdgeOfBoardBonus(int ind)
     int x = ind % 8;
     int y = ind / 8;
 
-    if(x == 0 || x == 7 || y == 0 || y == 7) res += 0.5;
+    if(x == 0 || x == 7 || y == 0 || y == 7) res += 1;
 
     return res;
 }
@@ -32,14 +32,6 @@ float EvaluatorDame::addEdgeOfBoardBonus(int ind)
 float EvaluatorDame::addNumOfTargetBonus(int ind, QString board, QString lastStep)
 {
     float res = 0;
-    bool isChained;
-
-    if(lastStep.contains('x')){
-        QStringList sL = lastStep.split('x');
-        isChained = sL[1].toInt() == ind;
-    } else {
-        isChained = false;
-    }
 
     QSet<QString> pSteps = validators[valIndex]->getValidIndecies(ind, board);
     for (auto i = pSteps.cbegin(), end = pSteps.cend(); i != end; ++i){
@@ -54,21 +46,12 @@ float EvaluatorDame::addNumOfTargetBonus(int ind, QString board, QString lastSte
 
         int indOfTarget = getIndOfTarget(ind, to);
 
-        if(isChained){
-            if(board[indOfTarget] == 'd' || board[indOfTarget] == 'D'){
-                res += 2; // This means we can take dame from here
-            } else {
-                res += 1;
-            }
+        if(board[indOfTarget] == 'd' || board[indOfTarget] == 'D'){
+            res += 2;
         } else {
-            if(board[indOfTarget] == 'd' || board[indOfTarget] == 'D'){
-                // This means we cannot take dame from here and
-                // our dame will probably be taken in the next turn
-                res -= 3;
-            } else {
-                res += 1;
-            }
+            res += 1;
         }
+
     }
 
     return res;
