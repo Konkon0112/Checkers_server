@@ -56,8 +56,8 @@ float EvaluatorBase::underAttackSubBonus(int ind, QString board, QString lastSte
     directions.append(QPair<int, int>(1, 1));
     directions.append(QPair<int, int>(-1, 1));
 
-    int iX = ind / 8;
-    int iY = ind % 8;
+    int iX = ind % 8;
+    int iY = ind / 8;
 
     for(int i = 0; i < directions.length(); i++){
         int dX = directions[i].first;
