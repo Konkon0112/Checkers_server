@@ -7,26 +7,21 @@ EvaluatorPawn::EvaluatorPawn(QObject *parent)
 float EvaluatorPawn::evaluatePiece(int ind, QString board, QString lastStep)
 {
     if(board[ind] == 'x') return 0;
-    float base = baseVal;
+    float res = baseVal;
     bool isDark = board[ind].isLower();
 
     int y = ind / 8;
 
-    float sRowBonus = 0;
-    float tRowBonus = 0;
-
     // A pawn if made it to the last line it becomes a dame
     if(isDark){
-        if(y == 5) sRowBonus += 0.5;
-        if(y == 6) tRowBonus += 1;
+        if(y == 5) res += 0.5;
+        if(y == 6) res += 1;
     } else {
-        if(y == 2) sRowBonus += 0.5;
-        if(y == 1) tRowBonus += 1;
+        if(y == 2) res += 0.5;
+        if(y == 1) res += 1;
     }
 
-    float beingAttackedDanger = underAttackSubBonus(ind, board, lastStep);
+    res += underAttackSubBonus(ind, board, lastStep, res);
 
-    base = base + sRowBonus + tRowBonus + beingAttackedDanger;
-
-    return isDark? -base : base;
+    return isDark? -res : res;
 }

@@ -7,12 +7,13 @@ EvaluatorDame::EvaluatorDame(QObject *parent)
 
 float EvaluatorDame::evaluatePiece(int ind, QString board, QString lastStep)
 {
+    if(board[ind] == 'x') return 0;
     float result = baseVal;
     bool isDark = board[ind].isLower();
 
     result += addEdgeOfBoardBonus(ind);
     result += addNumOfTargetBonus(ind, board, lastStep);
-    result += underAttackSubBonus(ind, board, lastStep);
+    result += underAttackSubBonus(ind, board, lastStep, result);
 
     return isDark? -result : result;
 }

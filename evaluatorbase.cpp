@@ -27,7 +27,7 @@ ValidatorBase *EvaluatorBase::findValidator(QChar ch)
     return nullptr;
 }
 
-float EvaluatorBase::underAttackSubBonus(int ind, QString board, QString lastStep)
+float EvaluatorBase::underAttackSubBonus(int ind, QString board, QString lastStep, float valSoFar)
 {
     if(lastStep.contains('x')){
         QStringList stepDissasembled = lastStep.split('x');
@@ -65,7 +65,6 @@ float EvaluatorBase::underAttackSubBonus(int ind, QString board, QString lastSte
 
         int indX = iX + dX;
         int indY = iY + dY;
-        int dist = 1;
 
         while(indX >= 0 && indY >= 0 &&
                indX < 8 && indY < 8){
@@ -75,21 +74,22 @@ float EvaluatorBase::underAttackSubBonus(int ind, QString board, QString lastSte
 
             if(board[index] != 'x'){ // Found a square where there is a piece on surface
                 if(isOppositeTeam(board[ind], board[index])){ // That piece is from the opposite team
-                    if(dist == 1){
-                        if(isPawn(board[index]) || isDame(board[index])){
-                            return isPawn(board[ind])? -3 : -4.5;
-                        }
-                    } else { // dist > 1
-                        if(isDame(board[index])){ // only Dame can attack from distance
-                            return isPawn(board[ind])? -3 : -4.5;
-                        }
+                    //Check if it can hit our piece
+                    ValidatorBase* val = findValidator(board[index]);
+                    QSet<QString> steps = val->getValidIndecies(index, board);
+                    for (auto i = steps.cbegin(), end = steps.cend(); i != end; ++i){
+                        QString stepValue = *i;
+                        QStringList stepDissasembled = stepValue.split('x');
+                        if(stepDissasembled.length() == 1) continue;
+
+                        int targetInd = getIndOfTarget(stepDissasembled[0].toInt(), stepDissasembled[1].toInt());
+                        if(ind == targetInd) return -valSoFar;
                     }
                 }
                 break;
             }
             indX += dX;
             indY += dY;
-            dist ++;
         }
     }
     return 0;
