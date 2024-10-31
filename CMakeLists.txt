@@ -35,6 +35,7 @@ add_executable(checkers_backend
   evaluatorpawn.h evaluatorpawn.cpp
   evaluatordame.h evaluatordame.cpp
   customexception.h customexception.cpp
+
 )
 
 target_link_libraries(checkers_backend Qt${QT_VERSION_MAJOR}::Core Qt6::Network)

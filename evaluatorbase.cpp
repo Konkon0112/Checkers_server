@@ -32,24 +32,62 @@ float EvaluatorBase::underAttackSubBonus(int ind, QString board, QString lastSte
     if(lastStep.contains('x')){
         QStringList stepDissasembled = lastStep.split('x');
         int to = stepDissasembled[1].toInt();
+        ValidatorBase* val = findValidator(board[to]);
+        if(!val) return 0;
+
+        QSet<QString> pSteps = val->getValidIndecies(to, board);
 
         if(ind == to){ // Chained attack maybe possible
-            ValidatorBase* val = findValidator(board[ind]);
-            if(!val) return 0;
-            QSet<QString> pSteps = val->getValidIndecies(ind, board);
-
             if(!pSteps.isEmpty()){
                 QString fStep = *pSteps.cbegin();
-                // If it can attack, it has to so the piece won't stay here to be taken
+                // If it can attack, it has to so the piece won't stay here
+                // so it cannot be taken
                 if(fStep.contains('x')) return 0;
+            } else {
+                // possible steps are empty -> it is gonna stay here
+                return underAttackSubBonusInCaseOfStay(ind, board, valSoFar);
+            }
+        } else if (isOppositeTeam(board[ind], board[to])) {
+            // Decide if the last step was made by the opposite team
+            if(pSteps.isEmpty()){
+                // And they can't take another step
+                return 0;
+            } else {
+                // Check if current piece can be taken by chained capture
+                for (auto i = pSteps.cbegin(), end = pSteps.cend(); i != end; ++i){
+                    QString stepValue = *i;
+                    QStringList stepDissasembled = stepValue.split('x');
+                    if(stepDissasembled.length() == 1) continue;
 
-                // If it doesn't cotain 'x' it can only take normal steps from here
-                // and because the previous step was to get here that means this piece
-                // is going to stay here.
+                    int targetInd = getIndOfTarget(stepDissasembled[0].toInt(), stepDissasembled[1].toInt());
+                    if(ind == targetInd) return -valSoFar;
+                }
+            }
+        } else { // The last step was made from the same team
+            if(pSteps.isEmpty()){
+                return underAttackSubBonusInCaseOfStay(ind, board, valSoFar);
+            } else {
+                QString fStep = *pSteps.cbegin();
+                if(fStep.contains('x')) return 0; // Chained capture will happen
+
+                return underAttackSubBonusInCaseOfStay(ind, board, valSoFar);
             }
         }
-    }
 
+    } else if(lastStep.contains('-')){ // In case of normal step
+        QStringList stepDissasembled = lastStep.split('-');
+        int to = stepDissasembled[1].toInt();
+
+        if(isOppositeTeam(board[ind], board[to])){
+            // It cannot be taken by a piece from the same team
+            return 0;
+        }
+    }
+    return underAttackSubBonusInCaseOfStay(ind, board, valSoFar);
+}
+
+float EvaluatorBase::underAttackSubBonusInCaseOfStay(int ind, QString board, float valSoFar)
+{
     QList<QPair<int, int>> directions;
     directions.append(QPair<int, int>(-1, -1));
     directions.append(QPair<int, int>(1, -1));
