@@ -134,10 +134,13 @@ int RoomBase::countPlayersInRoom()
 
 void RoomBase::stepInitiatedSlot(QString step)
 {
-    // Check if right player
-    //  - player on turn
     QObject* signalSender = sender();
     Participant* participant = qobject_cast<Participant*>(signalSender);
+    if(undoInitiatedBy != Participant::ParticipantSideEnum::NONE) {
+        participant->receiveNotification(ToastTypeEnum::WARNING, "There is an active undo request.");
+    }
+    // Check if right player
+    //  - player on turn
     if(participant->isPlayerSide(Participant::ParticipantSideEnum::NONE)){
         participant->receiveNotification(ToastTypeEnum::WARNING, "Spectators cannot initiate moves!");
         return;
