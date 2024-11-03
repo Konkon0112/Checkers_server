@@ -215,6 +215,13 @@ void RoomBase::rejectUndoSlot()
         return;
     }
 
+    for(int i = 0; i < pList.length(); i++){
+        if(pList[i]->isPlayerSide(undoInitiatedBy)){
+            pList[i]->receiveNotification(ToastTypeEnum::INFO, "Undo request rejected!");
+            break;
+        }
+    }
+
     undoInitiatedBy = Participant::ParticipantSideEnum::NONE;
 }
 
