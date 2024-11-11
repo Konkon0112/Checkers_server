@@ -35,5 +35,5 @@ void HumanVsHumanRoom::playerQuitSlot()
 
     delete participant;
 
-    if(pNum == 1 && roomState == RoomState::ACTIVE) emit removeRoomFromListSignal();
+    if(pList.length() == 0) emit removeRoomFromListSignal();
 }
