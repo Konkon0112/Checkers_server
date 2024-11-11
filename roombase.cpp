@@ -116,7 +116,7 @@ void RoomBase::dealWithDisconnectedParticipant(QTcpSocket* socket)
             qInfo() << hP  << "left the game";
             delete hP;
 
-            if(pNum == 1 && roomState == RoomBase::RoomState::ACTIVE) emit removeRoomFromListSignal();
+            if(pList.length() == 0) emit removeRoomFromListSignal();
         }
     }
 }
