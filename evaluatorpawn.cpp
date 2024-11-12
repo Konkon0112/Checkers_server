@@ -12,7 +12,7 @@ float EvaluatorPawn::evaluatePiece(int ind, QString board, QString lastStep)
 
     int y = ind / 8;
 
-    // A pawn if made it to the last line it becomes a dame
+    // A pawn if make it to the last line it becomes a dame
     if(isDark){
         if(y == 5) res += 0.5;
         if(y == 6) res += 1;
