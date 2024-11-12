@@ -18,11 +18,21 @@ public:
     * @return The evaluation value of the board, if the piece at the given index is not it's responsibility returns 0.
     */
     virtual float evaluatePiece(int ind, QString board, QString lastStep) = 0;
+
+    /**
+    * @brief Check if the piece is this evaluator's responsibility.
+    *
+    * @return The character representation of the piece on board.
+    */
     bool isEvaluatorResponsibility(QChar ch);
 signals:
 
 protected:
     ValidatorBase* findValidator(QChar ch);
+    /**
+    * @brief Check if the piece at the given index is target of opponent.
+    * @note It assumes that all the other bonus have been added.
+    */
     float underAttackSubBonus(int ind, QString board, QString lastStep, float valSoFar);
     float underAttackSubBonusInCaseOfStay(int ind, QString board, float valSoFar);
     int getIndOfTarget(int from, int to);

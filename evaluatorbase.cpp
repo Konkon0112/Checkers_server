@@ -35,7 +35,7 @@ float EvaluatorBase::underAttackSubBonus(int ind, QString board, QString lastSte
         ValidatorBase* val = findValidator(board[to]);
         if(!val) return 0;
 
-        QSet<QString> pSteps = val->getValidIndecies(to, board);
+        QSet<QString> pSteps = val->getValidSteps(to, board);
 
         if(ind == to){ // Chained attack maybe possible
             if(!pSteps.isEmpty()){
@@ -114,7 +114,7 @@ float EvaluatorBase::underAttackSubBonusInCaseOfStay(int ind, QString board, flo
                 if(isOppositeTeam(board[ind], board[index])){ // That piece is from the opposite team
                     //Check if it can hit our piece
                     ValidatorBase* val = findValidator(board[index]);
-                    QSet<QString> steps = val->getValidIndecies(index, board);
+                    QSet<QString> steps = val->getValidSteps(index, board);
                     for (auto i = steps.cbegin(), end = steps.cend(); i != end; ++i){
                         QString stepValue = *i;
                         QStringList stepDissasembled = stepValue.split('x');

@@ -14,6 +14,9 @@ class UseablePieceFinder : public QObject
 public:
     explicit UseablePieceFinder(QObject *parent = nullptr);
 
+    /**
+    * @brief Find the indecies of all the useable piece from the given color.
+    */
     QSet<int> findUseablePieceIndecies(QString board, Participant::ParticipantSideEnum userPiece);
 
 private:

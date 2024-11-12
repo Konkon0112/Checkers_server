@@ -18,7 +18,7 @@ QSet<int> UseablePieceFinder::findUseablePieceIndecies(QString board, Participan
         if((ch == 'p' || ch == 'd') &&
             userPiece == Participant::ParticipantSideEnum::DARK){
             ValidatorBase* validator = findResponsibleValidator(board[i]);
-            QSet<QString> steps = validator->getValidIndecies(i, board);
+            QSet<QString> steps = validator->getValidSteps(i, board);
             if(steps.isEmpty()) continue;
             bool canTake = containsStepThatCanTake(steps);
 
@@ -31,7 +31,7 @@ QSet<int> UseablePieceFinder::findUseablePieceIndecies(QString board, Participan
         } else if((ch == 'P' || ch == 'D') &&
                    userPiece == Participant::ParticipantSideEnum::LIGHT){
             ValidatorBase* validator = findResponsibleValidator(board[i]);
-            QSet<QString> steps = validator->getValidIndecies(i, board);
+            QSet<QString> steps = validator->getValidSteps(i, board);
             if(steps.isEmpty()) continue;
 
             bool canTake = containsStepThatCanTake(steps);

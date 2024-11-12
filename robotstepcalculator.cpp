@@ -173,7 +173,7 @@ QList<QString> RobotStepCalculator::getAllPossibleSteps(QString board, bool isMa
             ValidatorBase* validator = getValidator(board[to]);
             if(!validator) normalSteps; // empty
 
-            QSet<QString> pSteps = validator->getValidIndecies(to, board);
+            QSet<QString> pSteps = validator->getValidSteps(to, board);
 
             for (auto i = pSteps.cbegin(), end = pSteps.cend(); i != end; ++i){
                 QString stepValue = *i;
@@ -196,7 +196,7 @@ QList<QString> RobotStepCalculator::getAllPossibleSteps(QString board, bool isMa
         ValidatorBase* validator = getValidator(board[i]);
         if(!validator) continue;
 
-        QSet<QString> pSteps = validator->getValidIndecies(i, board);
+        QSet<QString> pSteps = validator->getValidSteps(i, board);
 
         for (auto i = pSteps.cbegin(), end = pSteps.cend(); i != end; ++i){
             QString stepValue = *i;
@@ -223,7 +223,7 @@ bool RobotStepCalculator::isChainedPossible(QString lastStep, QString board)
     int to = stepDisasmbled[1].toInt();
 
     ValidatorBase* validator = getValidator(board[to]);
-    QSet<QString> pSteps = validator->getValidIndecies(to, board);
+    QSet<QString> pSteps = validator->getValidSteps(to, board);
 
     if(pSteps.isEmpty()) return false;
 

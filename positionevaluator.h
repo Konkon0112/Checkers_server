@@ -13,9 +13,13 @@ class PositionEvaluator : public QObject
     Q_OBJECT
 public:
     explicit PositionEvaluator(QObject *parent = nullptr);
-    float evaluatePosition(QString board, QString lastStep);
 
-signals:
+    /**
+    * @brief Evaluate the board state using the lastStep.
+    *
+    * @return The evaluation value.
+    */
+    float evaluatePosition(QString board, QString lastStep);
 
 private:
     EvaluatorBase *findEvaluator(QChar ch);

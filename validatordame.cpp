@@ -7,7 +7,7 @@ ValidatorDame::ValidatorDame(QObject *parent)
     validationChars.second = 'D';
 }
 
-QSet<QString> ValidatorDame::getValidIndecies(int startInd, QString board)
+QSet<QString> ValidatorDame::getValidSteps(int startInd, QString board)
 {
     QList<QPair<int, int>> l;
     l.append(QPair<int, int>(-1, -1));

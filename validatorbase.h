@@ -11,9 +11,13 @@ class ValidatorBase : public QObject
     Q_OBJECT
 public:
     explicit ValidatorBase(QObject *parent = nullptr);
+
     bool isValidatorsResponsibility(QChar c);
     bool isValidStep(QString step, QString board);
-    virtual QSet<QString> getValidIndecies(int startInd, QString board) = 0;
+    /**
+    * @brief Calculate all the possible steps for the piece on the given index.
+    */
+    virtual QSet<QString> getValidSteps(int startInd, QString board) = 0;
 
 private:
     int getIndFromCoordinates(QPair<int, int> coord);

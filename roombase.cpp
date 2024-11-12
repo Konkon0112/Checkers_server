@@ -151,7 +151,7 @@ void RoomBase::stepInitiatedSlot(QString step)
     }
 
     try {
-        gameModel->passStepForward(step);
+        gameModel->executeStep(step);
     } catch(CustomException* e){
         participant->receiveNotification(e->getToastType(), e->getMessage());
     }

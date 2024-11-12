@@ -9,7 +9,7 @@ class ValidatorDame : public ValidatorBase
     Q_OBJECT
 public:
     explicit ValidatorDame(QObject *parent = nullptr);
-    QSet<QString> getValidIndecies(int startInd, QString board) override;
+    QSet<QString> getValidSteps(int startInd, QString board) override;
 
 private:
 

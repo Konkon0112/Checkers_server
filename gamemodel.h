@@ -25,13 +25,39 @@ public:
     };
 
     void startGame();
+    /**
+    * @brief Restart the board and set color on turn to LIGHT.
+    */
     void restartGame();
+
+    /**
+    * @brief Validate and execute step, if the given step is not valid throw CustomException.
+    */
     void passStepForward(QString step);
+
+    /**
+    * @brief Execute step.
+    * @warning Without step validation.
+    */
     void passStepOnSetUp(QString step);
+
+    /**
+    * @brief Undo all the steps that happened until the last step of the given color.
+    */
     void undoStep(Participant::ParticipantSideEnum playerWhoInitiated);
+    /**
+    * @return The color of the player's side that should make the next move.
+    */
     Participant::ParticipantSideEnum getColorOnTurn() const;
+
+    /**
+    * @return All the steps that happened from the start of the game joined with ';'.
+    */
     QString getJoinedStepStr();
     void setColorOnTurn(Participant::ParticipantSideEnum newColorOnTurn);
+    /**
+    * @brief Set up the game state based on the given steps and the next color.
+    */
     void setUpContinuedGame(QString stepsSoFar, Participant::ParticipantSideEnum nextColor);
 
 signals:

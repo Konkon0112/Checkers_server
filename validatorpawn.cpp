@@ -7,7 +7,7 @@ ValidatorPawn::ValidatorPawn(QObject *parent)
     validationChars.second = 'P';
 }
 
-QSet<QString> ValidatorPawn::getValidIndecies(int startInd, QString board)
+QSet<QString> ValidatorPawn::getValidSteps(int startInd, QString board)
 {
     QChar c = board.at(startInd);
     QList<QPair<int, int>> l;

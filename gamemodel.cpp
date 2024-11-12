@@ -32,7 +32,7 @@ void GameModel::restartGame()
     updateUseablePieces();
 }
 
-void GameModel::passStepForward(QString step)
+void GameModel::executeStep(QString step)
 {
     if(state == GameState::FINISHED) throw new CustomException("The game is already finished.", ToastTypeEnum::ERROR);
     if(step == "") throw new CustomException("A step must do something.", ToastTypeEnum::WARNING);
@@ -75,7 +75,7 @@ void GameModel::passStepForward(QString step)
     Participant::ParticipantSideEnum nextColor;
 
     if(step.contains('x')){
-        QSet<QString> possibleSteps = validator->getValidIndecies(to, board->getActiveBoard());
+        QSet<QString> possibleSteps = validator->getValidSteps(to, board->getActiveBoard());
 
         if(possibleSteps.empty()){ // If piece can't step after take
             nextColor = newTurn;
@@ -192,12 +192,12 @@ bool GameModel::checkIfGameOver(Participant::ParticipantSideEnum playerOnTurnSid
         if(v == nullptr) continue;
         if(playerOnTurnSide == Participant::ParticipantSideEnum::DARK &&
                 activeBoard.at(i).isLower()){
-            QSet<QString> possibleSteps = v->getValidIndecies(i, activeBoard);
+            QSet<QString> possibleSteps = v->getValidSteps(i, activeBoard);
             if(!possibleSteps.isEmpty()) return false;
 
         } else if(playerOnTurnSide == Participant::ParticipantSideEnum::LIGHT &&
                    activeBoard.at(i).isUpper()){
-            QSet<QString> possibleSteps = v->getValidIndecies(i, activeBoard);
+            QSet<QString> possibleSteps = v->getValidSteps(i, activeBoard);
             if(!possibleSteps.isEmpty()) return false;
         }
     }

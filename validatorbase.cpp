@@ -16,7 +16,7 @@ bool ValidatorBase::isValidStep(QString step, QString board)
         stepDissasembled = step.split('x');
     }
     int from = stepDissasembled[0].toInt();
-    QSet<QString> validSteps = getValidIndecies(from, board);
+    QSet<QString> validSteps = getValidSteps(from, board);
 
     for (auto i = validSteps.cbegin(), end = validSteps.cend(); i != end; ++i){
         QString stepValue = *i;
