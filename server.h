@@ -23,6 +23,9 @@ public slots:
     void readyRead();
 
 private slots:
+    /**
+    * @brief Take on the responsibility to read the messages comming from the client again.
+    */
     void playerQuitGameSlot(QTcpSocket* socket);
     void removeRoomFromListSlot();
 

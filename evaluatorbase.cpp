@@ -44,7 +44,7 @@ float EvaluatorBase::underAttackSubBonus(int ind, QString board, QString lastSte
                 // so it cannot be taken
                 if(fStep.contains('x')) return 0;
             } else {
-                // possible steps are empty -> it is gonna stay here
+                // possible steps are empty -> it is gonna stay here and opponent is the next to move
                 return underAttackSubBonusInCaseOfStay(ind, board, valSoFar);
             }
         } else if (isOppositeTeam(board[ind], board[to])) {
@@ -57,7 +57,7 @@ float EvaluatorBase::underAttackSubBonus(int ind, QString board, QString lastSte
                 for (auto i = pSteps.cbegin(), end = pSteps.cend(); i != end; ++i){
                     QString stepValue = *i;
                     QStringList stepDissasembled = stepValue.split('x');
-                    if(stepDissasembled.length() == 1) continue;
+                    if(stepDissasembled.length() == 1) break; // One normal step -> there is no piece taking step
 
                     int targetInd = getIndOfTarget(stepDissasembled[0].toInt(), stepDissasembled[1].toInt());
                     if(ind == targetInd) return -valSoFar;
@@ -79,6 +79,7 @@ float EvaluatorBase::underAttackSubBonus(int ind, QString board, QString lastSte
         int to = stepDissasembled[1].toInt();
 
         if(isOppositeTeam(board[ind], board[to])){
+            // That means the next step is going to be moving a piece on the same side
             // It cannot be taken by a piece from the same team
             return 0;
         }

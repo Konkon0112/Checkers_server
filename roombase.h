@@ -24,12 +24,18 @@ public:
     };
     explicit RoomBase(RoomState rs, QObject *parent = nullptr);
 
+    /**
+    * @brief Creates a Participant representation in the room for the given socket
+    */
     void join(QTcpSocket* socket);
 
     RoomState getRoomState() const;
 
     RoomType getRoomType() const;
 
+    /**
+    * @brief Handle players who disconnected from the server, before quitting the room.
+    */
     void dealWithDisconnectedParticipant(QTcpSocket* socket);
 
 protected:

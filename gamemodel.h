@@ -33,7 +33,7 @@ public:
     /**
     * @brief Validate and execute step, if the given step is not valid throw CustomException.
     */
-    void passStepForward(QString step);
+    void executeStep(QString step);
 
     /**
     * @brief Execute step.

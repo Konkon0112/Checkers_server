@@ -33,7 +33,7 @@ float EvaluatorDame::addNumOfTargetBonus(int ind, QString board, QString lastSte
 {
     float res = 0;
 
-    QSet<QString> pSteps = validators[valIndex]->getValidIndecies(ind, board);
+    QSet<QString> pSteps = validators[valIndex]->getValidSteps(ind, board);
     for (auto i = pSteps.cbegin(), end = pSteps.cend(); i != end; ++i){
         QString stepValue = *i;
 
